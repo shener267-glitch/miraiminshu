@@ -72,7 +72,6 @@
   .hero{background:var(--paper-deep);color:var(--ink);padding:110px 0 0;overflow:hidden;}
   .hero .wrap{padding-bottom:70px;}
   .hero-visual{position:relative;max-width:1040px;margin:0 auto;}
-  .hero-photo-wide{width:100%;aspect-ratio:5/4;object-fit:cover;object-position:78% 38%;border-radius:8px;display:block;}
   .hero-eyebrow-box{position:absolute;top:6%;left:5%;z-index:6;}
   .hero-eyebrow-box .eyebrow{background:var(--paper);display:inline-flex;padding:7px 12px 7px 10px;margin:0;}
   .hero-overlay{position:absolute;left:5%;bottom:9%;max-width:50%;z-index:6;}
@@ -87,7 +86,7 @@
   .badge-name{display:block;font-size:15px;font-weight:900;color:var(--ink);margin-top:2px;}
 
   /* ---------- HERO CAROUSEL ---------- */
-  .hero-carousel{position:relative;width:100%;aspect-ratio:5/4;overflow:hidden;display:grid;border-radius:8px;}
+  .hero-carousel{position:relative;width:100%;aspect-ratio:5/4;overflow:hidden;display:grid;border-radius:8px;touch-action:pan-y;}
   .hero-slide{grid-column:1;grid-row:1;width:100%;height:100%;object-fit:cover;object-position:78% 38%;opacity:0;transition:opacity .5s ease-in-out;display:block;}
   .hero-slide:first-child{opacity:1;}
   .hero-slide.active{opacity:1;z-index:1;}
@@ -252,7 +251,6 @@
     .hero-carousel{aspect-ratio:3/4;display:grid;}
     .hero-slide{grid-column:1;grid-row:1;opacity:0;object-position:82% 28%;}
     .hero-slide.active{opacity:1;}
-    .hero-photo-wide{aspect-ratio:3/4;object-position:82% 28%;}
     .hero-eyebrow-box{top:5%;left:5%;}
     .hero-eyebrow-box .eyebrow{font-size:10px;padding:6px 10px 6px 8px;}
     .hero-overlay{max-width:76%;left:5%;bottom:6%;}

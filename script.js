@@ -167,7 +167,10 @@ const header = document.getElementById('siteHeader');
     const showSlide = (index) => {
       slides.forEach((slide, i) => {
         slide.classList.toggle('active', i === index);
-        if (dots[i]) dots[i].classList.toggle('active', i === index);
+        if (dots[i]) {
+          dots[i].classList.toggle('active', i === index);
+          dots[i].setAttribute('aria-current', String(i === index));
+        }
       });
     };
 
