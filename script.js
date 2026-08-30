@@ -62,96 +62,58 @@ const header = document.getElementById('siteHeader');
     memberSearchInput.addEventListener('input', () => filterMembers(memberSearchInput.value));
   }
 
-  const newsListPage = document.getElementById('newsListPage');
-  if (newsListPage) {
-    const allNewsRows = Array.from(newsListPage.querySelectorAll('.news-row'));
-    const filterPills = document.querySelectorAll('.news-filter .tag-pill');
-    const dateFromInput = document.getElementById('newsDateFrom');
-    const dateToInput = document.getElementById('newsDateTo');
-    const dateResetBtn = document.getElementById('newsDateReset');
-    const paginationEl = document.getElementById('newsPagination');
-    const noResultsEl = document.getElementById('newsNoResults');
-    const NEWS_PER_PAGE = 5;
+  const heroCarousel = document.querySelector('.hero-carousel');
+  const slides = document.querySelectorAll('.hero-slide');
+  const dots = document.querySelectorAll('.carousel-dot');
 
-    let activeCategory = 'all';
-    let currentPage = 1;
+  if (heroCarousel && slides.length > 0) {
+    let currentSlide = 0;
+    let autoplayInterval;
 
-    const getFilteredRows = () => allNewsRows.filter((row) => {
-      const category = row.dataset.category;
-      const date = row.dataset.date;
-      if (activeCategory !== 'all' && category !== activeCategory) return false;
-      if (dateFromInput && dateFromInput.value && date < dateFromInput.value) return false;
-      if (dateToInput && dateToInput.value && date > dateToInput.value) return false;
-      return true;
-    });
-
-    const renderNewsList = () => {
-      const filtered = getFilteredRows();
-      const totalPages = Math.max(1, Math.ceil(filtered.length / NEWS_PER_PAGE));
-      if (currentPage > totalPages) currentPage = totalPages;
-
-      const start = (currentPage - 1) * NEWS_PER_PAGE;
-      const pageRows = new Set(filtered.slice(start, start + NEWS_PER_PAGE));
-
-      allNewsRows.forEach((row) => { row.hidden = !pageRows.has(row); });
-      if (noResultsEl) noResultsEl.hidden = filtered.length !== 0;
-
-      if (paginationEl) {
-        paginationEl.innerHTML = '';
-        if (filtered.length > 0) {
-          for (let page = 1; page <= totalPages; page += 1) {
-            const link = document.createElement('a');
-            link.href = '#';
-            link.textContent = String(page);
-            if (page === currentPage) link.classList.add('current');
-            link.addEventListener('click', (event) => {
-              event.preventDefault();
-              currentPage = page;
-              renderNewsList();
-            });
-            paginationEl.appendChild(link);
-          }
-          if (currentPage < totalPages) {
-            const next = document.createElement('a');
-            next.href = '#';
-            next.textContent = '→';
-            next.addEventListener('click', (event) => {
-              event.preventDefault();
-              currentPage += 1;
-              renderNewsList();
-            });
-            paginationEl.appendChild(next);
-          }
-        }
-      }
+    const showSlide = (index) => {
+      slides.forEach((slide, i) => {
+        slide.classList.toggle('active', i === index);
+        if (dots[i]) dots[i].classList.toggle('active', i === index);
+      });
     };
 
-    filterPills.forEach((pill) => {
-      pill.addEventListener('click', () => {
-        activeCategory = pill.dataset.category;
-        currentPage = 1;
-        filterPills.forEach((p) => p.classList.remove('active'));
-        pill.classList.add('active');
-        renderNewsList();
-      });
+    const nextSlide = () => {
+      currentSlide = (currentSlide + 1) % slides.length;
+      showSlide(currentSlide);
+    };
+
+    const prevSlide = () => {
+      currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+      showSlide(currentSlide);
+    };
+
+    const goToSlide = (index) => {
+      currentSlide = index;
+      showSlide(currentSlide);
+      resetAutoplay();
+    };
+
+    const startAutoplay = () => {
+      autoplayInterval = setInterval(nextSlide, 5000);
+    };
+
+    const resetAutoplay = () => {
+      clearInterval(autoplayInterval);
+      startAutoplay();
+    };
+
+    dots.forEach((dot, index) => {
+      dot.addEventListener('click', () => goToSlide(index));
     });
 
-    [dateFromInput, dateToInput].forEach((input) => {
-      if (!input) return;
-      input.addEventListener('change', () => {
-        currentPage = 1;
-        renderNewsList();
-      });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') prevSlide();
+      if (e.key === 'ArrowRight') nextSlide();
     });
 
-    if (dateResetBtn) {
-      dateResetBtn.addEventListener('click', () => {
-        if (dateFromInput) dateFromInput.value = '';
-        if (dateToInput) dateToInput.value = '';
-        currentPage = 1;
-        renderNewsList();
-      });
-    }
+    showSlide(0);
+    startAutoplay();
 
-    renderNewsList();
+    heroCarousel.addEventListener('mouseenter', () => clearInterval(autoplayInterval));
+    heroCarousel.addEventListener('mouseleave', () => startAutoplay());
   }
