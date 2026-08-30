@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<script>document.documentElement.classList.add('js');</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="未来民主党の公式サイト（架空の政党によるWebデザインサンプル）。政策、代表メッセージ、党のあゆみ、入党案内を掲載。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23C4FF4E'/%3E%3Ccircle cx='16' cy='19' r='8' fill='%23111112' opacity='.9'/%3E%3Cpath d='M3 21c4-9 22-9 26 0' stroke='%23111112' stroke-width='2' fill='none' opacity='.55'/%3E%3C/svg%3E">
+<title>未来民主党 ― 公式サイト</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header id="siteHeader">
+  <div class="wrap">
+    <a href="#top" class="brand">
+      <img src="images/logo.png" class="mark" alt="未来民主党ロゴ">
+      未来民主党
+    </a>
+    <nav class="mainnav" id="mainNav">
+      <a href="news.html">ニュース</a>
+      <a href="policy.html">政策</a>
+      <a href="about.html">党について</a>
+      <a href="#leader">代表メッセージ</a>
+      <a href="#history">あゆみ</a>
+      <a href="join.html" class="mobile-cta-link">参加する</a>
+    </nav>
+    <a href="join.html" class="nav-cta">参加する</a>
+    <button class="menu-btn" aria-label="メニュー" aria-expanded="false" aria-controls="mainNav">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="3" y1="7" x2="21" y2="7"/><line x1="3" y1="13" x2="21" y2="13"/><line x1="3" y1="19" x2="21" y2="19"/></svg>
+    </button>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="wrap">
+      <div class="hero-visual">
+        <img class="hero-photo-wide" src="images/hero.jpg" alt="党代表 東雲涼介が執務室の窓辺に立つ様子">
+        <div class="hero-eyebrow-box">
+          <div class="eyebrow">FUTURE DEMOCRATIC PARTY ／ 結党2023</div>
+        </div>
+        <div class="hero-overlay">
+          <h1><span class="line">国民が</span><br><span class="line">作る<span class="hi">未来</span>を。</span></h1>
+          <p class="lead">未来民主党は、テクノロジーと対話の力で、政治をもう一度この国の日常に<br>取り戻します。次の世代のための政治を、いまここから。</p>
+          <div class="hero-ctas">
+            <a href="policy.html" class="btn btn-primary">政策を見る</a>
+            <a href="join.html" class="btn btn-outline">党員になる</a>
+          </div>
+        </div>
+        <div class="hero-photo-badge">
+          <span class="badge-eyebrow">党代表</span>
+          <span class="badge-name">東雲 涼介</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- NEWS -->
+  <section class="news" id="news">
+    <div class="wrap">
+      <div class="news-head reveal">
+        <div>
+          <div class="eyebrow">NEWS ／ お知らせ</div>
+          <h2>お知らせ</h2>
+        </div>
+        <a href="news.html" class="btn btn-outline">ニュース一覧を見る</a>
+      </div>
+      <div class="news-list reveal">
+
+        <a href="news-2026-08-20.html" class="news-row">
+          <span class="news-date">2026.08.20</span>
+          <span class="news-tag">政策</span>
+          <span class="news-title">「こども未来基金」法案を国会に提出しました</span>
+          <span class="news-arrow">→</span>
+        </a>
+
+        <a href="news-2026-08-05.html" class="news-row">
+          <span class="news-date">2026.08.05</span>
+          <span class="news-tag">活動報告</span>
+          <span class="news-title">全国キャラバン「未来対話」がスタートしました</span>
+          <span class="news-arrow">→</span>
+        </a>
+
+        <a href="news-2026-07-18.html" class="news-row">
+          <span class="news-date">2026.07.18</span>
+          <span class="news-tag">党大会</span>
+          <span class="news-title">次期衆議院選挙に向けた公約を発表しました</span>
+          <span class="news-arrow">→</span>
+        </a>
+
+        <a href="news-2026-06-30.html" class="news-row">
+          <span class="news-date">2026.06.30</span>
+          <span class="news-tag">活動報告</span>
+          <span class="news-title">東雲代表が経済団体との意見交換会に出席しました</span>
+          <span class="news-arrow">→</span>
+        </a>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- POLICY -->
+  <section class="policies" id="policy">
+    <div class="wrap">
+      <div class="policies-head reveal">
+        <div class="eyebrow">POLICY ／ 政策の5本柱</div>
+        <h2>次の世代のために、<br>いま決めること。</h2>
+      </div>
+
+      <div class="policy-grid reveal">
+        <div class="policy-card">
+          <svg class="icon" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="10" r="4"/><circle cx="10" cy="34" r="4"/><circle cx="38" cy="34" r="4"/><line x1="24" y1="14" x2="12" y2="30"/><line x1="24" y1="14" x2="36" y2="30"/><line x1="14" y1="34" x2="34" y2="34"/></svg>
+          <div class="num">01</div>
+          <h3><a href="policy.html#01" style="color:inherit;">デジタル政府の実現</a></h3>
+          <p>マイナンバーと連携した行政ポータルを整備し、婚姻・転居・相続などのライフイベント手続きをワンストップ化。窓口業務は縮小し、浮いた人員は住民サービスの相談窓口に再配置します。</p>
+        </div>
+        <div class="policy-card">
+          <svg class="icon" viewBox="0 0 48 48" aria-hidden="true"><path d="M6 13c6-3 12-3 18 0v25c-6-3-12-3-18 0V13z"/><path d="M42 13c-6-3-12-3-18 0v25c6-3 12-3 18 0V13z"/></svg>
+          <div class="num">02</div>
+          <h3><a href="policy.html#02" style="color:inherit;">教育・子育て支援の抜本改革</a></h3>
+          <p>0〜2歳児の保育料を段階的に無償化し、大学等の給付型奨学金の対象を拡大します。学校現場のICT環境整備と、教員の働き方改革もあわせて進めます。</p>
+        </div>
+        <div class="policy-card">
+          <svg class="icon" viewBox="0 0 48 48" aria-hidden="true"><rect x="8" y="18" width="32" height="21" rx="2"/><path d="M8 18l16-10 16 10"/><path d="M18 27l5 5 9-9"/></svg>
+          <div class="num">03</div>
+          <h3><a href="policy.html#03" style="color:inherit;">若者が政治に参加できる社会</a></h3>
+          <p>選挙権年齢を16歳に、被選挙権年齢を18歳に引き下げます。地方議会に若年枠を設け、政治参加の入り口を広げます。</p>
+        </div>
+        <div class="policy-card">
+          <svg class="icon" viewBox="0 0 48 48" aria-hidden="true"><path d="M24 8c10 4 14 12 14 20s-6 14-14 14-14-6-14-14 4-16 14-20z"/><path d="M24 42V16"/><path d="M19 13l5-5 5 5"/></svg>
+          <div class="num">04</div>
+          <h3><a href="policy.html#04" style="color:inherit;">脱炭素と持続可能な成長</a></h3>
+          <p>再生可能エネルギーの固定価格買取を拡充し、地域主導の発電事業を支援します。2035年までに電源構成の再エネ比率50%を目指します。</p>
+        </div>
+        <div class="policy-card">
+          <svg class="icon" viewBox="0 0 48 48" aria-hidden="true"><path d="M8 14l12-6 8 4 12-4v26l-12 4-8-4-12 4V14z"/><line x1="20" y1="8" x2="20" y2="34"/><line x1="28" y1="12" x2="28" y2="38"/><circle cx="14" cy="24" r="2"/></svg>
+          <div class="num">05</div>
+          <h3><a href="policy.html#05" style="color:inherit;">地方分散型の国づくり</a></h3>
+          <p>中央省庁機能の一部地方移転と、本社機能を移転する企業への税制優遇を実施。デジタル基盤の整備で「どこでも働ける」社会をつくります。</p>
+        </div>
+        <div class="policy-card policy-card-more">
+          <h3>政策の全文を読む</h3>
+          <p>5本柱それぞれの詳細な取り組みを、政策ページとしてまとめています。</p>
+          <a href="policy.html" class="btn btn-dark">政策ページへ</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT / OVERVIEW -->
+  <section class="overview" id="about">
+    <div class="wrap">
+      <div class="overview-head reveal">
+        <div class="eyebrow">ABOUT ／ 未来民主党について</div>
+        <h2>変えるのは、政治のかたち。</h2>
+        <p class="lead-text">日本の政治は、まだ昭和のままです。決め方も、伝え方も、参加のしかたも。未来民主党は、開かれた対話とテクノロジーの力で、一人ひとりの声が届く仕組みをつくります。</p>
+      </div>
+
+      <div style="text-align:center;padding:2rem 0;">
+        <a href="about.html" class="btn btn-primary">詳しく</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- LEADER -->
+  <section class="leader" id="leader">
+    <div class="wrap">
+      <div class="avatar-wrap reveal">
+        <img src="images/leader.jpg" alt="党代表 東雲涼介の写真">
+      </div>
+      <div class="reveal">
+        <div class="eyebrow">MESSAGE ／ 代表挨拶</div>
+        <span class="quote-mark">”</span>
+        <blockquote>政治とは、遠い誰かが決めることではなく、私たち自身で選びとるものです。この国の「次の朝」を、一緒につくりましょう。</blockquote>
+        <div>
+          <div class="name">東雲 涼介（しののめ りょうすけ）</div>
+          <div class="role">未来民主党 代表</div>
+        </div>
+        <p class="bioline">1981年生まれ。地方議員、IT企業の経営を経て、2023年に未来民主党を結党。「対話から始める政治」を掲げ、全国で対話集会を続けている。</p>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- JOIN -->
+  <section class="join" id="join">
+    <div class="wrap">
+      <div class="join-head reveal">
+        <div class="eyebrow" style="justify-content:center;">JOIN US</div>
+        <h2>国民が作る、<span class="hi">次の未来</span>を。</h2>
+        <p>未来民主党の活動は、一人ひとりの参加で支えられています。あなたにできる関わり方を選んでください。</p>
+      </div>
+
+      <div class="join-grid reveal">
+        <a href="join.html#member" class="join-card" style="color:inherit;">
+          <div class="icon-circle"><svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="20" cy="14" r="7"/><path d="M8 40c0-9 5-15 12-15s12 6 12 15"/><line x1="36" y1="10" x2="36" y2="20"/><line x1="31" y1="15" x2="41" y2="15"/></svg></div>
+          <h3>党員になる</h3>
+          <p>党員として意思決定に参加する</p>
+        </a>
+        <a href="join.html#donate" class="join-card" style="color:inherit;">
+          <div class="icon-circle"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 40C10 40 6 28 6 20c0-6 5-10 10-10 4 0 7 2 8 6 1-4 4-6 8-6 5 0 10 4 10 10 0 8-4 20-18 20z"/></svg></div>
+          <h3>寄付する</h3>
+          <p>活動を支える寄付・カンパ</p>
+        </a>
+        <a href="join.html#volunteer" class="join-card" style="color:inherit;">
+          <div class="icon-circle"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M6 19v10h6l21 10V9L12 19H6z"/><path d="M29 16a9 9 0 010 16"/></svg></div>
+          <h3>ボランティア</h3>
+          <p>地域の対話集会をサポート</p>
+        </a>
+      </div>
+
+      <div class="join-cta-btn reveal">
+        <a href="join.html" class="btn btn-primary">今すぐ参加する</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- SNS -->
+  <section class="sns" id="sns">
+    <div class="wrap">
+      <div class="sns-head reveal">
+        <div class="eyebrow">SNS ／ 公式SNS</div>
+        <h2>公式SNSでも発信しています。</h2>
+      </div>
+      <div class="sns-grid reveal">
+        <a href="https://www.youtube.com/" target="_blank" rel="noopener noreferrer" class="sns-card">
+          <img src="images/sns-youtube.png" alt="YouTube" class="sns-icon">
+          <span class="sns-name">YouTube</span>
+        </a>
+        <a href="https://x.com/" target="_blank" rel="noopener noreferrer" class="sns-card">
+          <img src="images/sns-x.png" alt="X" class="sns-icon">
+          <span class="sns-name">X</span>
+        </a>
+        <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer" class="sns-card">
+          <img src="images/sns-instagram.png" alt="Instagram" class="sns-icon">
+          <span class="sns-name">Instagram</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand">
+          <img src="images/logo-lockup.png" alt="未来民主党 ― 国民の作る未来を" class="footer-logo">
+        </div>
+        <p class="desc">国民が作る未来を。対話から始める政治で、次の世代のための社会をつくります。</p>
+      </div>
+      <div class="footer-col">
+        <h4>党について</h4>
+        <ul>
+          <li><a href="#about">党の概要</a></li>
+          <li><a href="#history">沿革</a></li>
+          <li><a href="#leader">代表メッセージ</a></li>
+          <li><a href="members.html">所属議員</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>政策</h4>
+        <ul>
+          <li><a href="policy.html#01">デジタル政府</a></li>
+          <li><a href="policy.html#02">教育・子育て</a></li>
+          <li><a href="policy.html#03">若者と政治</a></li>
+          <li><a href="policy.html#04">脱炭素成長</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>参加する</h4>
+        <ul>
+          <li><a href="join.html#member">党員登録</a></li>
+          <li><a href="join.html#donate">寄付・カンパ</a></li>
+          <li><a href="join.html#volunteer">ボランティア</a></li>
+          <li><a href="contact.html">お問い合わせ</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 未来民主党</span>
+      <span>プライバシーポリシー ／ サイトマップ ／ <a href="contact.html">お問い合わせ</a></span>
+    </div>
+    <p class="footer-note">本サイトはWebデザインのサンプルとして制作された、架空の政党「未来民主党」の公式サイトです。実在するいかなる政党・団体・人物とも関係ありません。掲載されている代表者名、議員数、党員数、政策、ニュース等はすべて架空の設定です。</p>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+
+</body>
+</html>
