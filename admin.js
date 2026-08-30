@@ -302,7 +302,7 @@ function renderMemberProfileHtml(item) {
   }
   const chamberLabel = CHAMBER_LABELS[item.chamber] || '';
   const description = item.role ? `${escapeHtml(item.role)} ${escapeHtml(item.name)}` : escapeHtml(item.name);
-  const leadText = [item.role, chamberLabel, item.district].filter(Boolean).map(escapeHtml).join(' ／ ');
+  const leadText = [item.role, item.district].filter(Boolean).map(escapeHtml).join(' ／ ');
   const roleRow = item.role ? `            <div><dt>役職</dt><dd>${escapeHtml(item.role)}</dd></div>\n` : '';
   return `<!DOCTYPE html>
 <html lang="ja">
@@ -337,12 +337,12 @@ ${SITE_HEADER}
     <div class="wrap">
       <div class="member-profile">
         <div class="member-profile-photo">
+          <div class="member-profile-chamber">${escapeHtml(chamberLabel)}</div>
           <img src="../${item.image}" alt="${escapeHtml(item.name)}">
         </div>
         <div class="member-profile-body">
           <dl class="member-profile-meta">
-${roleRow}            <div><dt>区分</dt><dd>${escapeHtml(chamberLabel)}</dd></div>
-            <div><dt>選挙区</dt><dd>${escapeHtml(item.district)}</dd></div>
+${roleRow}            <div><dt>選挙区</dt><dd>${escapeHtml(item.district)}</dd></div>
             <div><dt>生年月日</dt><dd>${formatDateJp(item.birthdate)}</dd></div>
           </dl>
           <h3 class="member-profile-heading">経歴</h3>
@@ -379,9 +379,13 @@ function officerCardHtml(m) {
 }
 
 async function regenerateMembersGrid(arr) {
-  const cardsHtml = arr.map(officerCardHtml).join('\n');
+  const officers = arr.filter(m => m.role);
+  const generalMembers = arr.filter(m => !m.role);
+  const officersHtml = officers.map(officerCardHtml).join('\n');
+  const generalHtml = generalMembers.map(officerCardHtml).join('\n');
   const file = await getFile('members.html');
-  const updated = replaceMarkerBlock(file.text, '<!-- OFFICER-GRID-START -->', '<!-- OFFICER-GRID-END -->', cardsHtml);
+  let updated = replaceMarkerBlock(file.text, '<!-- OFFICER-GRID-START -->', '<!-- OFFICER-GRID-END -->', officersHtml);
+  updated = replaceMarkerBlock(updated, '<!-- MEMBER-GRID-START -->', '<!-- MEMBER-GRID-END -->', generalHtml);
   await putTextFile('members.html', updated, '議員一覧ページ更新', file.sha);
 }
 
@@ -527,11 +531,17 @@ async function deleteMember(slug) {
   try {
     const memberFile = await getFile('data/members.json');
     let arr = JSON.parse(memberFile.text);
+    const item = arr.find(x => x.slug === slug);
     arr = arr.filter(x => x.slug !== slug);
     await putTextFile('data/members.json', JSON.stringify(arr, null, 2) + '\n', `議員削除: ${slug}`, memberFile.sha);
 
     const profileFile = await getFile(`members/${slug}.html`);
     if (profileFile) await deleteFile(`members/${slug}.html`, `プロフィール削除: ${slug}`, profileFile.sha);
+
+    if (item && item.image && item.image.startsWith('images/members/')) {
+      const imgFile = await getFile(item.image);
+      if (imgFile) await deleteFile(item.image, `画像削除: ${slug}`, imgFile.sha);
+    }
 
     await regenerateMembersGrid(arr);
     setStatus('削除しました。', 'success');
