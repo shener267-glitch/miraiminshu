@@ -120,13 +120,32 @@
 
   /* ---------- LEADER ---------- */
   .leader{padding:110px 0;background:var(--paper-deep);color:var(--ink);}
-  .leader .wrap{display:grid;grid-template-columns:240px 1fr;gap:64px;align-items:center;}
-  .avatar-wrap img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:50%;border:6px solid var(--lime);display:block;}
+  .leader .wrap{display:grid;grid-template-columns:300px 1fr;gap:64px;align-items:center;}
+  .avatar-wrap img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:28px;border:6px solid var(--lime);display:block;}
   .quote-mark{font-size:70px;font-weight:900;line-height:.5;color:var(--ink);opacity:.18;margin-bottom:16px;display:block;}
   .leader blockquote{margin:0 0 30px;font-size:clamp(18px,2.1vw,24px);line-height:1.9;font-weight:500;color:var(--ink);}
   .leader .name{font-weight:700;font-size:15.5px;}
   .leader .role{font-size:12.5px;color:var(--ink-soft);margin-top:4px;}
   .leader .bioline{margin-top:20px;font-size:13px;color:var(--ink-soft);max-width:32em;}
+
+  /* ---------- MEMBER SEARCH ---------- */
+  .member-search{padding:90px 0;background:var(--paper);text-align:center;}
+  .member-search-head{max-width:36em;margin:0 auto 36px;}
+  .member-search-head h2{font-size:clamp(24px,3vw,32px);color:var(--ink);font-weight:700;margin:12px 0;line-height:1.6;}
+  .member-search-head p{color:var(--ink-soft);font-size:14px;margin:0;}
+  .member-search-form{display:flex;gap:12px;max-width:480px;margin:0 auto;}
+  .member-search-form input{flex:1;min-width:0;padding:14px 20px;border:1px solid var(--line);border-radius:999px;font-size:14px;font-family:inherit;background:var(--paper-deep);color:var(--ink);}
+  .member-search-form input:focus-visible{outline:2px solid var(--ink);outline-offset:2px;}
+  .member-search-form button{white-space:nowrap;}
+  @media (max-width:520px){
+    .member-search-form{flex-direction:column;}
+  }
+
+  /* ---------- MEMBER DIRECTORY SEARCH (members.html) ---------- */
+  .member-search-box{max-width:480px;margin:0 auto 40px;}
+  .member-search-box input{width:100%;padding:14px 20px;border:1px solid var(--line);border-radius:999px;font-size:14px;font-family:inherit;background:var(--paper);color:var(--ink);}
+  .member-search-box input:focus-visible{outline:2px solid var(--ink);outline-offset:2px;}
+  .member-no-results{text-align:center;color:var(--ink-soft);font-size:14px;padding:40px 0;}
 
   /* ---------- TIMELINE ---------- */
   .timeline{padding:110px 0;background:var(--paper);}
@@ -198,7 +217,7 @@
     .news-tag{display:none;}
     .policy-grid{grid-template-columns:repeat(2,1fr);}
     .leader .wrap{grid-template-columns:1fr;text-align:left;}
-    .avatar-wrap{max-width:160px;}
+    .avatar-wrap{max-width:200px;}
     .footer-grid{grid-template-columns:1fr 1fr;}
     .stat-grid{grid-template-columns:repeat(2,1fr);}
     .join-grid{grid-template-columns:1fr;}
@@ -287,7 +306,7 @@
 /* ---------- ABOUT: officers ---------- */
 .officer-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin-top:20px;}
 .officer-card{background:var(--paper);padding:30px 24px;text-align:center;}
-.officer-avatar{width:76px;height:76px;border-radius:50%;background:var(--paper-deep);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-weight:900;font-size:20px;color:var(--ink-soft);}
+.officer-avatar{width:76px;height:76px;border-radius:50%;background:var(--paper-deep);object-fit:cover;display:block;margin:0 auto 16px;}
 .officer-card .role{font-size:11.5px;color:var(--ink-soft);letter-spacing:.05em;margin-bottom:6px;}
 .officer-card .name{font-size:15px;font-weight:700;color:var(--ink);}
 

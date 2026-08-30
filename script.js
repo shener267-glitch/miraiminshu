@@ -36,3 +36,28 @@ const header = document.getElementById('siteHeader');
       });
     });
   }
+
+  const memberSearchInput = document.getElementById('memberSearchInput');
+  const officerCards = document.querySelectorAll('.officer-card');
+  const memberNoResults = document.getElementById('memberNoResults');
+  if (memberSearchInput && officerCards.length) {
+    const filterMembers = (query) => {
+      const q = query.trim().toLowerCase();
+      let visibleCount = 0;
+      officerCards.forEach((card) => {
+        const name = card.querySelector('.name');
+        const role = card.querySelector('.role');
+        const text = `${name ? name.textContent : ''} ${role ? role.textContent : ''}`.toLowerCase();
+        const match = !q || text.includes(q);
+        card.hidden = !match;
+        if (match) visibleCount += 1;
+      });
+      if (memberNoResults) memberNoResults.hidden = visibleCount !== 0;
+    };
+
+    const initialQuery = new URLSearchParams(window.location.search).get('q') || '';
+    if (initialQuery) memberSearchInput.value = initialQuery;
+    filterMembers(initialQuery);
+
+    memberSearchInput.addEventListener('input', () => filterMembers(memberSearchInput.value));
+  }
