@@ -319,10 +319,26 @@
 
 /* ---------- ABOUT: officers ---------- */
 .officer-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin-top:20px;}
-.officer-card{background:var(--paper);padding:30px 24px;text-align:center;}
+.officer-card{background:var(--paper);padding:30px 24px;text-align:center;display:block;transition:background .3s var(--ease);}
+.officer-card:hover{background:var(--paper-deep);}
 .officer-avatar{width:76px;height:76px;border-radius:50%;background:var(--paper-deep);object-fit:cover;display:block;margin:0 auto 16px;}
 .officer-card .role{font-size:11.5px;color:var(--ink-soft);letter-spacing:.05em;margin-bottom:6px;}
 .officer-card .name{font-size:15px;font-weight:700;color:var(--ink);}
+
+/* ---------- MEMBER PROFILE (individual page) ---------- */
+.member-profile{display:grid;grid-template-columns:240px 1fr;gap:48px;align-items:start;}
+.member-profile-photo img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:20px;border:6px solid var(--lime);display:block;}
+.member-profile-meta{display:flex;flex-wrap:wrap;gap:10px 28px;margin:0 0 24px;padding:0;}
+.member-profile-meta div{display:flex;gap:8px;align-items:baseline;margin:0;}
+.member-profile-meta dt{font-size:12px;font-weight:700;color:var(--ink-soft);margin:0;}
+.member-profile-meta dd{font-size:14.5px;font-weight:700;color:var(--ink);margin:0;}
+.member-profile-bio{font-size:15px;color:var(--ink);line-height:2;margin:0 0 28px;}
+.member-profile-sns{display:flex;gap:14px;}
+.member-profile-sns img{width:32px;height:32px;border-radius:8px;display:block;}
+@media (max-width:680px){
+  .member-profile{grid-template-columns:1fr;gap:28px;}
+  .member-profile-photo{max-width:200px;margin:0 auto;}
+}
 
 /* ---------- FORMS (join / contact) ---------- */
 .form-card{background:var(--paper);border:1px solid var(--line);padding:40px;max-width:640px;}
