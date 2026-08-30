@@ -88,7 +88,8 @@
 
   /* ---------- HERO CAROUSEL ---------- */
   .hero-carousel{position:relative;width:100%;aspect-ratio:5/4;overflow:hidden;display:grid;border-radius:8px;}
-  .hero-slide{grid-column:1;grid-row:1;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .6s ease-in-out;display:block;}
+  .hero-slide{grid-column:1;grid-row:1;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .5s ease-in-out;display:block;}
+  .hero-slide:first-child{opacity:1;}
   .hero-slide.active{opacity:1;z-index:1;}
   .hero-carousel-nav{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);display:flex;gap:10px;z-index:5;}
   .carousel-dot{width:12px;height:12px;border-radius:50%;border:2px solid rgba(255,255,255,.6);background:transparent;cursor:pointer;transition:all .3s ease;padding:0;}
