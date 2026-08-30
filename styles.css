@@ -333,7 +333,7 @@
 .member-profile{display:grid;grid-template-columns:240px 1fr;gap:32px;align-items:start;}
 .member-profile-photo{text-align:center;}
 .member-profile-chamber{display:inline-block;font-size:11px;font-weight:700;color:var(--ink-soft);background:var(--paper-deep);border-radius:999px;padding:5px 14px;letter-spacing:.04em;margin:0 0 12px;}
-.member-profile-photo img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:20px;border:6px solid var(--lime);display:block;}
+.member-profile-photo img{width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:20px;border:6px solid var(--lime);display:block;}
 .member-profile-meta{display:flex;flex-wrap:wrap;gap:10px 28px;margin:0 0 24px;padding:0;}
 .member-profile-meta div{display:flex;gap:8px;align-items:baseline;margin:0;}
 .member-profile-meta dt{font-size:12px;font-weight:700;color:var(--ink-soft);margin:0;}
