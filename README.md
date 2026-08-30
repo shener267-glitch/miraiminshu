@@ -1,3 +1,0 @@
-# miraiminshu
-
-めも
