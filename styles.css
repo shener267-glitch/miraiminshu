@@ -73,16 +73,16 @@
   .hero .wrap{padding-bottom:70px;}
   .hero-visual{position:relative;max-width:1040px;margin:0 auto;}
   .hero-photo-wide{width:100%;aspect-ratio:5/4;object-fit:cover;object-position:78% 38%;border-radius:8px;display:block;}
-  .hero-eyebrow-box{position:absolute;top:6%;left:5%;}
+  .hero-eyebrow-box{position:absolute;top:6%;left:5%;z-index:6;}
   .hero-eyebrow-box .eyebrow{background:var(--paper);display:inline-flex;padding:7px 12px 7px 10px;margin:0;}
-  .hero-overlay{position:absolute;left:5%;bottom:9%;max-width:50%;}
+  .hero-overlay{position:absolute;left:5%;bottom:9%;max-width:50%;z-index:6;}
   .hero h1{color:var(--ink);font-size:clamp(22px, 3.4vw, 44px);font-weight:900;line-height:1.6;margin:0 0 18px;}
   .hero h1 .line{background:var(--paper);padding:2px 12px;box-decoration-break:clone;-webkit-box-decoration-break:clone;display:inline;}
   .hero h1 .hi{background:var(--lime);padding:0 6px;}
   .hero p.lead{color:var(--ink);font-size:clamp(12px,1.2vw,14px);max-width:26em;margin:0 0 24px;background:var(--paper);display:inline;box-decoration-break:clone;-webkit-box-decoration-break:clone;padding:3px 10px;line-height:2.1;}
   .hero-ctas{display:flex;gap:12px;flex-wrap:wrap;}
   .hero-overlay .btn-outline{background:var(--paper);border-color:var(--paper);}
-  .hero-photo-badge{position:absolute;right:22px;bottom:22px;background:#fff;padding:12px 18px;box-shadow:0 14px 30px -10px rgba(0,0,0,.4);}
+  .hero-photo-badge{position:absolute;right:22px;bottom:22px;background:#fff;padding:12px 18px;box-shadow:0 14px 30px -10px rgba(0,0,0,.4);z-index:6;}
   .badge-eyebrow{display:block;font-size:10.5px;color:var(--ink-soft);font-weight:700;letter-spacing:.06em;}
   .badge-name{display:block;font-size:15px;font-weight:900;color:var(--ink);margin-top:2px;}
 
