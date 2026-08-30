@@ -133,5 +133,20 @@
       "instagram": "",
       "youtube": ""
     }
+  },
+  {
+    "slug": "sada-sadasi",
+    "name": "佐田 定志",
+    "role": "国会対策委員長",
+    "chamber": "upper",
+    "district": "石川県第2区",
+    "birthdate": "1985-04-12",
+    "bio": "東京大学中退。内閣府に入府し、危機管理を担当。2025年、参議院議員初当選。",
+    "image": "images/officer-placeholder.png",
+    "sns": {
+      "x": "",
+      "instagram": "",
+      "youtube": "https://m.youtube.com/"
+    }
   }
 ]
