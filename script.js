@@ -210,4 +210,21 @@ const header = document.getElementById('siteHeader');
 
     heroCarousel.addEventListener('mouseenter', () => clearInterval(autoplayInterval));
     heroCarousel.addEventListener('mouseleave', () => startAutoplay());
+
+    let touchStartX = 0;
+    let touchStartY = 0;
+
+    heroCarousel.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].clientX;
+      touchStartY = e.changedTouches[0].clientY;
+    }, { passive: true });
+
+    heroCarousel.addEventListener('touchend', (e) => {
+      const deltaX = e.changedTouches[0].clientX - touchStartX;
+      const deltaY = e.changedTouches[0].clientY - touchStartY;
+      if (Math.abs(deltaX) > 40 && Math.abs(deltaX) > Math.abs(deltaY)) {
+        if (deltaX < 0) nextSlide(); else prevSlide();
+        resetAutoplay();
+      }
+    }, { passive: true });
   }
