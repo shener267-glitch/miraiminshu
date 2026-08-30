@@ -3,7 +3,8 @@ const REPO = 'miraiminshu';
 const BRANCH = 'main';
 const TOKEN_KEY = 'mm_admin_token';
 
-const CATEGORY_LABELS = { policy: '政策', report: '活動報告', convention: '党大会' };
+const CATEGORY_LABELS = { policy: '政策', report: '活動報告', convention: '党大会', other: 'その他' };
+const CHAMBER_LABELS = { lower: '衆議院議員', upper: '参議院議員', other: 'その他' };
 
 // ---------- utils ----------
 
@@ -186,6 +187,9 @@ const SITE_FOOTER = `<footer>
 function renderNewsArticleHtml(item, prevItem) {
   const description = escapeHtml((item.body[0] || item.title).slice(0, 80));
   const bodyHtml = item.body.map(p => `          <p>${escapeHtml(p)}</p>`).join('\n');
+  const imageHtml = item.image
+    ? `      <div class="article-image">\n        <img src="../${item.image}" alt="${escapeHtml(item.title)}">\n      </div>\n`
+    : '';
   const prevLink = prevItem
     ? `\n          <a href="${prevItem.slug}.html" class="btn btn-dark">前の記事へ →</a>`
     : '';
@@ -216,7 +220,7 @@ ${SITE_HEADER}
         <span class="news-date">${formatDateDots(item.date)} ・ ${escapeHtml(item.categoryLabel)}</span>
         <h1>${escapeHtml(item.title)}</h1>
       </div>
-      <div class="article-body">
+${imageHtml}      <div class="article-body">
 ${bodyHtml}
       </div>
       <div class="article-foot">
@@ -296,13 +300,17 @@ function renderMemberProfileHtml(item) {
       snsHtml += `            <a href="${url}" target="_blank" rel="noopener noreferrer" aria-label="${label}"><img src="../${icon}" alt="${label}"></a>\n`;
     }
   }
+  const chamberLabel = CHAMBER_LABELS[item.chamber] || '';
+  const description = item.role ? `${escapeHtml(item.role)} ${escapeHtml(item.name)}` : escapeHtml(item.name);
+  const leadText = [item.role, chamberLabel, item.district].filter(Boolean).map(escapeHtml).join(' ／ ');
+  const roleRow = item.role ? `            <div><dt>役職</dt><dd>${escapeHtml(item.role)}</dd></div>\n` : '';
   return `<!DOCTYPE html>
 <html lang="ja">
 <head>
 <script>document.documentElement.classList.add('js');</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="未来民主党 ${escapeHtml(item.role)} ${escapeHtml(item.name)}のプロフィールページです。">
+<meta name="description" content="未来民主党 ${description}のプロフィールページです。">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23C4FF4E'/%3E%3Ccircle cx='16' cy='19' r='8' fill='%23111112' opacity='.9'/%3E%3Cpath d='M3 21c4-9 22-9 26 0' stroke='%23111112' stroke-width='2' fill='none' opacity='.55'/%3E%3C/svg%3E">
 <title>${escapeHtml(item.name)} ― 未来民主党</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -321,7 +329,7 @@ ${SITE_HEADER}
       <div class="breadcrumb"><a href="../index.html">トップ</a> ／ <a href="../members.html">所属議員</a></div>
       <div class="eyebrow">MEMBERS ／ 所属議員紹介</div>
       <h1>${escapeHtml(item.name)}</h1>
-      <p class="lead-text">${escapeHtml(item.role)} ／ ${escapeHtml(item.district)}</p>
+      <p class="lead-text">${leadText}</p>
     </div>
   </section>
 
@@ -333,10 +341,11 @@ ${SITE_HEADER}
         </div>
         <div class="member-profile-body">
           <dl class="member-profile-meta">
-            <div><dt>役職</dt><dd>${escapeHtml(item.role)}</dd></div>
+${roleRow}            <div><dt>区分</dt><dd>${escapeHtml(chamberLabel)}</dd></div>
             <div><dt>選挙区</dt><dd>${escapeHtml(item.district)}</dd></div>
             <div><dt>生年月日</dt><dd>${formatDateJp(item.birthdate)}</dd></div>
           </dl>
+          <h3 class="member-profile-heading">経歴</h3>
 ${renderBioHtml(item.bio)}
           <div class="member-profile-sns">
 ${snsHtml}          </div>
@@ -360,10 +369,12 @@ ${SITE_FOOTER}
 }
 
 function officerCardHtml(m) {
+  const chamberLabel = CHAMBER_LABELS[m.chamber] || '';
+  const roleHtml = m.role ? `<div class="role">${escapeHtml(m.role)}</div>\n          ` : '';
   return `        <a class="officer-card" href="members/${m.slug}.html">
           <img class="officer-avatar" src="${m.image}" alt="${escapeHtml(m.name)}">
-          <div class="role">${escapeHtml(m.role)}</div>
-          <div class="name">${escapeHtml(m.name)}</div>
+          ${roleHtml}<div class="name">${escapeHtml(m.name)}</div>
+          <div class="sub">${[m.district, chamberLabel].filter(Boolean).map(escapeHtml).join(' ／ ')}</div>
         </a>`;
 }
 
@@ -482,6 +493,7 @@ async function saveMember(formData, isNew, imageFile) {
       slug,
       name: formData.name,
       role: formData.role,
+      chamber: formData.chamber,
       district: formData.district,
       birthdate: formData.birthdate,
       bio: formData.bio,
@@ -579,7 +591,7 @@ async function loadAndRenderMembers() {
           <img src="${item.image}" alt="">
           <div class="item-row-text">
             <div class="title">${escapeHtml(item.name)}</div>
-            <div class="meta">${escapeHtml(item.role)} ・ ${escapeHtml(item.district)}</div>
+            <div class="meta">${[item.role, CHAMBER_LABELS[item.chamber], item.district].filter(Boolean).map(escapeHtml).join(' ・ ')}</div>
           </div>
         </div>
         <div class="actions">
@@ -615,6 +627,7 @@ function openNewsForm(item) {
         <option value="policy">政策</option>
         <option value="report">活動報告</option>
         <option value="convention">党大会</option>
+        <option value="other">その他</option>
       </select>
       <label>題名</label>
       <input type="text" id="f_title" value="${item ? escapeHtml(item.title) : ''}">
@@ -656,16 +669,22 @@ function openMemberForm(item) {
       <h2>${isNew ? '新規議員' : '議員情報を編集'}</h2>
       <label>URLスラッグ（半角英数字とハイフン。例: yamada-taro）${isNew ? '' : '（変更不可）'}</label>
       <input type="text" id="f_slug" value="${item ? item.slug : ''}" ${isNew ? '' : 'disabled'}>
-      <label>名前</label>
-      <input type="text" id="f_name" value="${item ? escapeHtml(item.name) : ''}">
-      <label>役職</label>
-      <input type="text" id="f_role" value="${item ? escapeHtml(item.role) : ''}">
+      <label>名前（例: 民主 未来太郎 ／ 姓と名の間に半角スペース）</label>
+      <input type="text" id="f_name" placeholder="例: 民主 未来太郎" value="${item ? escapeHtml(item.name) : ''}">
+      <label>区分</label>
+      <select id="f_chamber">
+        <option value="lower">衆議院議員</option>
+        <option value="upper">参議院議員</option>
+        <option value="other">その他</option>
+      </select>
+      <label>役職（任意。執行部の役職がない一般議員は空欄でOK）</label>
+      <input type="text" id="f_role" value="${item ? escapeHtml(item.role || '') : ''}">
       <label>選挙区</label>
       <input type="text" id="f_district" value="${item ? escapeHtml(item.district) : ''}">
       <label>生年月日</label>
       <input type="date" id="f_birthdate" value="${item ? item.birthdate : ''}">
       <label>経歴（改行で段落を分けます）</label>
-      <textarea id="f_bio">${item ? escapeHtml(item.bio) : ''}</textarea>
+      <textarea id="f_bio" placeholder="例: ○○大学卒業後、△△に勤務。20XX年、地方議会議員に当選。以降、教育政策を中心に活動。">${item ? escapeHtml(item.bio) : ''}</textarea>
       <label>SNSリンク（任意）</label>
       <div class="sns-row">
         <input type="url" id="f_sns_x" placeholder="X (Twitter)" value="${item && item.sns ? item.sns.x || '' : ''}">
@@ -679,11 +698,13 @@ function openMemberForm(item) {
         <button class="btn-outline" id="f_cancel">キャンセル</button>
       </div>
     </div>`;
+  document.getElementById('f_chamber').value = item && item.chamber ? item.chamber : 'lower';
   document.getElementById('f_cancel').addEventListener('click', closeForm);
   document.getElementById('f_save').addEventListener('click', () => {
     const formData = {
       slug: document.getElementById('f_slug').value,
       name: document.getElementById('f_name').value.trim(),
+      chamber: document.getElementById('f_chamber').value,
       role: document.getElementById('f_role').value.trim(),
       district: document.getElementById('f_district').value.trim(),
       birthdate: document.getElementById('f_birthdate').value,
@@ -693,8 +714,8 @@ function openMemberForm(item) {
       snsYoutube: document.getElementById('f_sns_yt').value.trim(),
       existingImage: item ? item.image : '',
     };
-    if (!formData.slug || !formData.name || !formData.role || !formData.district || !formData.birthdate) {
-      setStatus('スラッグ・名前・役職・選挙区・生年月日は必須です。', 'error');
+    if (!formData.slug || !formData.name || !formData.district || !formData.birthdate) {
+      setStatus('スラッグ・名前・選挙区・生年月日は必須です。', 'error');
       return;
     }
     const imageFile = document.getElementById('f_image').files[0] || null;
