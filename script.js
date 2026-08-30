@@ -159,6 +159,8 @@ const header = document.getElementById('siteHeader');
   const heroCarousel = document.querySelector('.hero-carousel');
   const slides = document.querySelectorAll('.hero-slide');
   const dots = document.querySelectorAll('.carousel-dot');
+  const prevArrow = document.querySelector('.hero-carousel-arrow-prev');
+  const nextArrow = document.querySelector('.hero-carousel-arrow-next');
 
   if (heroCarousel && slides.length > 0) {
     let currentSlide = 0;
@@ -202,6 +204,20 @@ const header = document.getElementById('siteHeader');
     dots.forEach((dot, index) => {
       dot.addEventListener('click', () => goToSlide(index));
     });
+
+    if (prevArrow) {
+      prevArrow.addEventListener('click', () => {
+        prevSlide();
+        resetAutoplay();
+      });
+    }
+
+    if (nextArrow) {
+      nextArrow.addEventListener('click', () => {
+        nextSlide();
+        resetAutoplay();
+      });
+    }
 
     document.addEventListener('keydown', (e) => {
       if (e.key === 'ArrowLeft') prevSlide();
