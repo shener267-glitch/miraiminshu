@@ -42,6 +42,9 @@ function splitParagraphs(text) {
 function slugify(str) {
   return str.trim().toLowerCase().replace(/[^a-z0-9-]+/g, '-').replace(/^-+|-+$/g, '');
 }
+function rolesLabel(roles) {
+  return (roles || []).filter(Boolean).join('・');
+}
 
 function setStatus(message, kind) {
   const bar = document.getElementById('statusBar');
@@ -176,7 +179,7 @@ const SITE_FOOTER = `<footer>
     </div>
     <div class="footer-bottom">
       <span>© 2026 未来民主党</span>
-      <span>プライバシーポリシー ／ サイトマップ ／ <a href="../contact.html">お問い合わせ</a></span>
+      <span><a href="../privacy-policy.html">プライバシーポリシー</a> ／ <a href="../sitemap.html">サイトマップ</a> ／ <a href="../contact.html">お問い合わせ</a></span>
     </div>
     <p class="footer-note">本サイトはWebデザインのサンプルとして制作された、架空の政党「未来民主党」の公式サイトです。実在するいかなる政党・団体・人物とも関係ありません。掲載されている代表者名、議員数、党員数、政策、ニュース等はすべて架空の設定です。</p>
   </div>
@@ -285,10 +288,16 @@ const SNS_ICONS = {
   youtube: ['images/sns-youtube.png', 'YouTube'],
 };
 
-function renderBioHtml(bio) {
-  return splitParagraphs(bio)
-    .map(p => `          <p class="member-profile-bio">${escapeHtml(p)}</p>`)
+function renderParagraphsHtml(text, className) {
+  return splitParagraphs(text)
+    .map(p => `          <p class="${className}">${escapeHtml(p)}</p>`)
     .join('\n');
+}
+
+function renderMessageBlock(message) {
+  if (!message || !message.trim()) return '';
+  const paragraphs = splitParagraphs(message).map(p => `<p>${escapeHtml(p)}</p>`).join('\n            ');
+  return `          <h3 class="member-profile-heading">メッセージ</h3>\n          <div class="member-profile-message">\n            ${paragraphs}\n          </div>\n`;
 }
 
 function renderMemberProfileHtml(item) {
@@ -301,9 +310,12 @@ function renderMemberProfileHtml(item) {
     }
   }
   const chamberLabel = CHAMBER_LABELS[item.chamber] || '';
-  const description = item.role ? `${escapeHtml(item.role)} ${escapeHtml(item.name)}` : escapeHtml(item.name);
-  const leadText = [item.role, item.district].filter(Boolean).map(escapeHtml).join(' ／ ');
-  const roleRow = item.role ? `            <div><dt>役職</dt><dd>${escapeHtml(item.role)}</dd></div>\n` : '';
+  const roleText = rolesLabel(item.roles);
+  const description = roleText ? `${escapeHtml(roleText)} ${escapeHtml(item.name)}` : escapeHtml(item.name);
+  const leadText = [roleText, item.district].filter(Boolean).map(escapeHtml).join(' ／ ');
+  const roleRow = roleText ? `            <div><dt>役職</dt><dd>${escapeHtml(roleText)}</dd></div>\n` : '';
+  const kanaHtml = item.nameKana ? `      <p class="member-profile-kana">${escapeHtml(item.nameKana)}</p>\n` : '';
+  const messageHtml = renderMessageBlock(item.message);
   return `<!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -328,7 +340,7 @@ ${SITE_HEADER}
     <div class="wrap">
       <div class="breadcrumb"><a href="../index.html">トップ</a> ／ <a href="../members.html">所属議員</a></div>
       <div class="eyebrow">MEMBERS ／ 所属議員紹介</div>
-      <h1>${escapeHtml(item.name)}</h1>
+${kanaHtml}      <h1>${escapeHtml(item.name)}</h1>
       <p class="lead-text">${leadText}</p>
     </div>
   </section>
@@ -346,8 +358,8 @@ ${roleRow}            <div><dt>選挙区</dt><dd>${escapeHtml(item.district)}</d
             <div><dt>生年月日</dt><dd>${formatDateJp(item.birthdate)}</dd></div>
           </dl>
           <h3 class="member-profile-heading">経歴</h3>
-${renderBioHtml(item.bio)}
-          <div class="member-profile-sns">
+${renderParagraphsHtml(item.bio, 'member-profile-bio')}
+${messageHtml}          <div class="member-profile-sns">
 ${snsHtml}          </div>
         </div>
       </div>
@@ -370,7 +382,8 @@ ${SITE_FOOTER}
 
 function officerCardHtml(m) {
   const chamberLabel = CHAMBER_LABELS[m.chamber] || '';
-  const roleHtml = m.role ? `<div class="role">${escapeHtml(m.role)}</div>\n          ` : '';
+  const roleText = rolesLabel(m.roles);
+  const roleHtml = roleText ? `<div class="role">${escapeHtml(roleText)}</div>\n          ` : '';
   return `        <a class="officer-card" href="members/${m.slug}.html">
           <img class="officer-avatar" src="${m.image}" alt="${escapeHtml(m.name)}">
           ${roleHtml}<div class="name">${escapeHtml(m.name)}</div>
@@ -379,8 +392,8 @@ function officerCardHtml(m) {
 }
 
 async function regenerateMembersGrid(arr) {
-  const officers = arr.filter(m => m.role);
-  const generalMembers = arr.filter(m => !m.role);
+  const officers = arr.filter(m => m.roles && m.roles.length);
+  const generalMembers = arr.filter(m => !(m.roles && m.roles.length));
   const officersHtml = officers.map(officerCardHtml).join('\n');
   const generalHtml = generalMembers.map(officerCardHtml).join('\n');
   const file = await getFile('members.html');
@@ -496,11 +509,13 @@ async function saveMember(formData, isNew, imageFile) {
     const item = {
       slug,
       name: formData.name,
-      role: formData.role,
+      nameKana: formData.nameKana,
+      roles: formData.roles,
       chamber: formData.chamber,
       district: formData.district,
       birthdate: formData.birthdate,
       bio: formData.bio,
+      message: formData.message,
       image: imagePath,
       sns: { x: formData.snsX, instagram: formData.snsInstagram, youtube: formData.snsYoutube },
     };
@@ -601,7 +616,7 @@ async function loadAndRenderMembers() {
           <img src="${item.image}" alt="">
           <div class="item-row-text">
             <div class="title">${escapeHtml(item.name)}</div>
-            <div class="meta">${[item.role, CHAMBER_LABELS[item.chamber], item.district].filter(Boolean).map(escapeHtml).join(' ・ ')}</div>
+            <div class="meta">${[rolesLabel(item.roles), CHAMBER_LABELS[item.chamber], item.district].filter(Boolean).map(escapeHtml).join(' ・ ')}</div>
           </div>
         </div>
         <div class="actions">
@@ -681,20 +696,24 @@ function openMemberForm(item) {
       <input type="text" id="f_slug" value="${item ? item.slug : ''}" ${isNew ? '' : 'disabled'}>
       <label>名前（例: 民主 未来太郎 ／ 姓と名の間に半角スペース）</label>
       <input type="text" id="f_name" placeholder="例: 民主 未来太郎" value="${item ? escapeHtml(item.name) : ''}">
+      <label>ふりがな（任意。例: みんしゅ みらいたろう）</label>
+      <input type="text" id="f_kana" placeholder="例: みんしゅ みらいたろう" value="${item ? escapeHtml(item.nameKana || '') : ''}">
       <label>区分</label>
       <select id="f_chamber">
         <option value="lower">衆議院議員</option>
         <option value="upper">参議院議員</option>
         <option value="other">その他</option>
       </select>
-      <label>役職（任意。執行部の役職がない一般議員は空欄でOK）</label>
-      <input type="text" id="f_role" value="${item ? escapeHtml(item.role || '') : ''}">
+      <label>役職（任意・複数可。1行に1つずつ入力してください。執行部の役職がない一般議員は空欄でOK）</label>
+      <textarea id="f_role" placeholder="例:&#10;幹事長&#10;青年局長">${item ? escapeHtml((item.roles || []).join('\n')) : ''}</textarea>
       <label>選挙区</label>
       <input type="text" id="f_district" value="${item ? escapeHtml(item.district) : ''}">
       <label>生年月日</label>
       <input type="date" id="f_birthdate" value="${item ? item.birthdate : ''}">
       <label>経歴（改行で段落を分けます）</label>
       <textarea id="f_bio" placeholder="例: ○○大学卒業後、△△に勤務。20XX年、地方議会議員に当選。以降、教育政策を中心に活動。">${item ? escapeHtml(item.bio) : ''}</textarea>
+      <label>メッセージ（任意。経歴とは別に自由に記述できます）</label>
+      <textarea id="f_message" placeholder="例: 一人ひとりの声に向き合う政治を、地元から実現していきます。">${item ? escapeHtml(item.message || '') : ''}</textarea>
       <label>SNSリンク（任意）</label>
       <div class="sns-row">
         <input type="url" id="f_sns_x" placeholder="X (Twitter)" value="${item && item.sns ? item.sns.x || '' : ''}">
@@ -714,11 +733,13 @@ function openMemberForm(item) {
     const formData = {
       slug: document.getElementById('f_slug').value,
       name: document.getElementById('f_name').value.trim(),
+      nameKana: document.getElementById('f_kana').value.trim(),
       chamber: document.getElementById('f_chamber').value,
-      role: document.getElementById('f_role').value.trim(),
+      roles: splitParagraphs(document.getElementById('f_role').value),
       district: document.getElementById('f_district').value.trim(),
       birthdate: document.getElementById('f_birthdate').value,
       bio: document.getElementById('f_bio').value,
+      message: document.getElementById('f_message').value,
       snsX: document.getElementById('f_sns_x').value.trim(),
       snsInstagram: document.getElementById('f_sns_ig').value.trim(),
       snsYoutube: document.getElementById('f_sns_yt').value.trim(),
