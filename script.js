@@ -159,6 +159,7 @@ const header = document.getElementById('siteHeader');
   const heroCarousel = document.querySelector('.hero-carousel');
   const slides = document.querySelectorAll('.hero-slide');
   const dots = document.querySelectorAll('.carousel-dot');
+  const overlayItems = document.querySelectorAll('.hero-overlay-item');
   const prevArrow = document.querySelector('.hero-carousel-arrow-prev');
   const nextArrow = document.querySelector('.hero-carousel-arrow-next');
 
@@ -173,6 +174,10 @@ const header = document.getElementById('siteHeader');
           dots[i].classList.toggle('active', i === index);
           dots[i].setAttribute('aria-current', String(i === index));
         }
+      });
+      overlayItems.forEach((item, i) => {
+        item.classList.toggle('active', i === index);
+        item.toggleAttribute('inert', i !== index);
       });
     };
 
