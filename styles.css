@@ -267,6 +267,7 @@
 .page-header{background:var(--paper-deep);padding:150px 0 60px;}
 .page-header .eyebrow{margin-bottom:16px;}
 .page-header h1{font-size:clamp(26px,4vw,42px);font-weight:900;color:var(--ink);margin:0 0 14px;line-height:1.5;}
+.member-profile-kana{font-size:12.5px;color:var(--ink-soft);letter-spacing:.04em;margin:0 0 4px;}
 .page-header p.lead-text{color:var(--ink-soft);font-size:15px;max-width:38em;margin:0;}
 .breadcrumb{font-size:12.5px;color:var(--ink-soft);margin-bottom:18px;}
 .breadcrumb a{color:var(--ink-soft);border-bottom:1px solid var(--line);}
@@ -339,12 +340,26 @@
 .member-profile-meta dd{font-size:14.5px;font-weight:700;color:var(--ink);margin:0;}
 .member-profile-heading{font-size:13px;font-weight:700;color:var(--ink-soft);letter-spacing:.05em;margin:0 0 10px;}
 .member-profile-bio{font-size:15px;color:var(--ink);line-height:2;margin:0 0 28px;}
+.member-profile-message{background:var(--paper-deep);border-left:3px solid var(--lime);border-radius:6px;padding:18px 22px;margin:0 0 28px;}
+.member-profile-message p{font-size:14px;color:var(--ink);line-height:1.9;margin:0 0 10px;}
+.member-profile-message p:last-child{margin-bottom:0;}
 .member-profile-sns{display:flex;gap:14px;}
 .member-profile-sns img{width:32px;height:32px;border-radius:8px;display:block;}
 @media (max-width:680px){
   .member-profile{grid-template-columns:1fr;gap:28px;}
   .member-profile-photo{max-width:280px;margin:0 auto;}
   .member-profile-photo img{border-width:3px;}
+}
+
+/* ---------- SITEMAP ---------- */
+.sitemap-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:36px 32px;margin-top:10px;}
+.sitemap-col{border-left:2px solid var(--lime);padding-left:20px;}
+.sitemap-col h3{font-size:15px;font-weight:700;color:var(--ink);margin:0 0 14px;}
+.sitemap-col ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px;}
+.sitemap-col a{font-size:14px;color:var(--ink-soft);}
+.sitemap-col a:hover{color:var(--ink);}
+@media (max-width:680px){
+  .sitemap-grid{grid-template-columns:1fr;gap:28px;}
 }
 
 /* ---------- FORMS (join / contact) ---------- */
