@@ -5,6 +5,7 @@ const TOKEN_KEY = 'mm_admin_token';
 
 const CATEGORY_LABELS = { policy: '政策', report: '活動報告', convention: '党大会', other: 'その他' };
 const CHAMBER_LABELS = { lower: '衆議院議員', upper: '参議院議員', other: 'その他' };
+const EVENT_TYPE_LABELS = { taiwa: '対話集会', taikai: '党大会', enzetsu: '街頭演説', online: 'オンライン', other: 'その他' };
 
 // ---------- utils ----------
 
@@ -127,6 +128,7 @@ const SITE_HEADER = `<header id="siteHeader">
     </a>
     <nav class="mainnav" id="mainNav">
       <a href="../news.html">ニュース</a>
+      <a href="../events.html">イベント</a>
       <a href="../policy.html">政策</a>
       <a href="../about.html">党について</a>
       <a href="../members.html">所属議員</a>
@@ -278,6 +280,41 @@ async function regenerateIndexNewsPreview(newsArr) {
   const file = await getFile('index.html');
   const updated = replaceMarkerBlock(file.text, '<!-- NEWS-ROWS-START -->', '<!-- NEWS-ROWS-END -->', rowsHtml);
   await putTextFile('index.html', updated, 'トップページのお知らせ更新', file.sha);
+}
+
+// ---------- templates: events ----------
+
+function formatEventDay(iso) {
+  const [, m, d] = iso.split('-');
+  return { day: d, month: `${iso.slice(0, 4)}.${m}` };
+}
+
+function eventCardHtml(item) {
+  const { day, month } = formatEventDay(item.date);
+  return `        <div class="event-card" data-date="${item.date}">
+          <div class="event-card-date">
+            <span class="event-day">${day}</span>
+            <span class="event-month">${month}</span>
+          </div>
+          <div>
+            <div class="event-card-head">
+              <span class="event-badge"></span>
+              <span class="event-type">${escapeHtml(item.typeLabel)}</span>
+              <span class="event-time">${escapeHtml(item.time)}</span>
+            </div>
+            <h3>${escapeHtml(item.title)}</h3>
+            <p class="event-location">${escapeHtml(item.location)}</p>
+            <p class="event-desc">${escapeHtml(item.description)}</p>
+          </div>
+        </div>`;
+}
+
+async function regenerateEventsListPage(eventsArr) {
+  const sorted = [...eventsArr].sort((a, b) => a.date.localeCompare(b.date));
+  const rowsHtml = sorted.map(eventCardHtml).join('\n\n');
+  const file = await getFile('events.html');
+  const updated = replaceMarkerBlock(file.text, '<!-- EVENT-ROWS-START -->', '<!-- EVENT-ROWS-END -->', rowsHtml);
+  await putTextFile('events.html', updated, 'イベント一覧ページ更新', file.sha);
 }
 
 // ---------- templates: members ----------
@@ -492,6 +529,69 @@ async function deleteNews(slug) {
   }
 }
 
+// ---------- save / delete: events ----------
+
+async function saveEvent(formData, isNew) {
+  setStatus('保存中…');
+  try {
+    const eventsFile = await getFile('data/events.json');
+    let arr = eventsFile ? JSON.parse(eventsFile.text) : [];
+
+    let slug = formData.slug;
+    if (isNew) {
+      const base = `${formData.date}-${slugify(formData.title) || 'event'}`;
+      let candidate = base;
+      let n = 2;
+      while (arr.some(x => x.slug === candidate)) { candidate = `${base}-${n}`; n++; }
+      slug = candidate;
+    }
+
+    const item = {
+      slug,
+      date: formData.date,
+      time: formData.time,
+      type: formData.type,
+      typeLabel: EVENT_TYPE_LABELS[formData.type],
+      title: formData.title,
+      location: formData.location,
+      description: formData.description,
+    };
+
+    const idx = arr.findIndex(x => x.slug === slug);
+    if (idx >= 0) arr[idx] = item; else arr.push(item);
+    arr.sort((a, b) => a.date.localeCompare(b.date));
+
+    await putTextFile('data/events.json', JSON.stringify(arr, null, 2) + '\n', `イベント更新: ${item.title}`, eventsFile ? eventsFile.sha : undefined);
+    await regenerateEventsListPage(arr);
+
+    setStatus('保存しました。サイトへの反映まで少し時間がかかることがあります。', 'success');
+    closeForm();
+    await loadAndRenderEvents();
+  } catch (err) {
+    console.error(err);
+    setStatus('エラー: ' + err.message, 'error');
+  }
+}
+
+async function deleteEvent(slug) {
+  if (!confirm('このイベントを削除しますか？')) return;
+  setStatus('削除中…');
+  try {
+    const eventsFile = await getFile('data/events.json');
+    let arr = JSON.parse(eventsFile.text);
+    arr = arr.filter(x => x.slug !== slug);
+    await putTextFile('data/events.json', JSON.stringify(arr, null, 2) + '\n', `イベント削除: ${slug}`, eventsFile.sha);
+
+    await regenerateEventsListPage(arr);
+
+    setStatus('削除しました。', 'success');
+    await loadAndRenderEvents();
+  } catch (err) {
+    console.error(err);
+    setStatus('エラー: ' + err.message, 'error');
+  }
+}
+
 // ---------- save / delete: members ----------
 
 async function saveMember(formData, isNew, imageFile) {
@@ -631,6 +731,37 @@ async function loadAndRenderNews() {
         </div>`;
       row.querySelector('[data-action="edit"]').addEventListener('click', () => openNewsForm(item));
       row.querySelector('[data-action="delete"]').addEventListener('click', () => deleteNews(item.slug));
+      listEl.appendChild(row);
+    });
+  } catch (err) {
+    listEl.textContent = 'エラー: ' + err.message;
+  }
+}
+
+async function loadAndRenderEvents() {
+  const listEl = document.getElementById('eventList');
+  listEl.textContent = '読み込み中…';
+  try {
+    const file = await getFile('data/events.json');
+    const arr = (file ? JSON.parse(file.text) : []).sort((a, b) => a.date.localeCompare(b.date));
+    listEl.innerHTML = '';
+    if (arr.length === 0) { listEl.textContent = 'イベントはまだありません。'; return; }
+    arr.forEach(item => {
+      const row = document.createElement('div');
+      row.className = 'item-row';
+      row.innerHTML = `
+        <div class="item-row-main">
+          <div class="item-row-text">
+            <div class="title">${escapeHtml(item.title)}</div>
+            <div class="meta">${formatDateDots(item.date)} ・ ${escapeHtml(item.typeLabel)} ・ ${escapeHtml(item.location)}</div>
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn-outline btn-small" data-action="edit">編集</button>
+          <button class="btn-danger" data-action="delete">削除</button>
+        </div>`;
+      row.querySelector('[data-action="edit"]').addEventListener('click', () => openEventForm(item));
+      row.querySelector('[data-action="delete"]').addEventListener('click', () => deleteEvent(item.slug));
       listEl.appendChild(row);
     });
   } catch (err) {
@@ -787,6 +918,57 @@ function openNewsForm(item) {
   formArea.scrollIntoView({ behavior: 'smooth' });
 }
 
+function openEventForm(item) {
+  const isNew = !item;
+  const formArea = document.getElementById('formArea');
+  const today = new Date().toISOString().slice(0, 10);
+  formArea.innerHTML = `
+    <div class="card">
+      <h2>${isNew ? '新規イベント' : 'イベントを編集'}</h2>
+      <label>日付</label>
+      <input type="date" id="f_date" value="${item ? item.date : today}">
+      <label>時間（任意。例: 14:00〜16:00）</label>
+      <input type="text" id="f_time" placeholder="例: 14:00〜16:00" value="${item ? escapeHtml(item.time || '') : ''}">
+      <label>種類</label>
+      <select id="f_type">
+        <option value="taiwa">対話集会</option>
+        <option value="taikai">党大会</option>
+        <option value="enzetsu">街頭演説</option>
+        <option value="online">オンライン</option>
+        <option value="other">その他</option>
+      </select>
+      <label>タイトル</label>
+      <input type="text" id="f_title" value="${item ? escapeHtml(item.title) : ''}">
+      <label>開催場所</label>
+      <input type="text" id="f_location" placeholder="例: 大阪府大阪市" value="${item ? escapeHtml(item.location) : ''}">
+      <label>説明</label>
+      <textarea id="f_description">${item ? escapeHtml(item.description) : ''}</textarea>
+      <div class="form-actions">
+        <button class="btn-primary" id="f_save">保存する</button>
+        <button class="btn-outline" id="f_cancel">キャンセル</button>
+      </div>
+    </div>`;
+  document.getElementById('f_type').value = item ? item.type : 'taiwa';
+  document.getElementById('f_cancel').addEventListener('click', closeForm);
+  document.getElementById('f_save').addEventListener('click', () => {
+    const formData = {
+      slug: item ? item.slug : null,
+      date: document.getElementById('f_date').value,
+      time: document.getElementById('f_time').value.trim(),
+      type: document.getElementById('f_type').value,
+      title: document.getElementById('f_title').value.trim(),
+      location: document.getElementById('f_location').value.trim(),
+      description: document.getElementById('f_description').value.trim(),
+    };
+    if (!formData.date || !formData.title || !formData.location || !formData.description) {
+      setStatus('日付・タイトル・開催場所・説明は必須です。', 'error');
+      return;
+    }
+    saveEvent(formData, isNew);
+  });
+  formArea.scrollIntoView({ behavior: 'smooth' });
+}
+
 function openMemberForm(item) {
   const isNew = !item;
   const formArea = document.getElementById('formArea');
@@ -868,6 +1050,7 @@ function showApp() {
   document.getElementById('tokenScreen').hidden = true;
   document.getElementById('adminApp').hidden = false;
   loadAndRenderNews();
+  loadAndRenderEvents();
   loadAndRenderMembers();
 }
 
@@ -895,6 +1078,7 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
 });
 
 document.getElementById('newsAddBtn').addEventListener('click', () => openNewsForm(null));
+document.getElementById('eventAddBtn').addEventListener('click', () => openEventForm(null));
 document.getElementById('memberAddBtn').addEventListener('click', () => openMemberForm(null));
 document.getElementById('memberAdminSearch').addEventListener('input', (e) => {
   memberSearchQuery = e.target.value;

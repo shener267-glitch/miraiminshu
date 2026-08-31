@@ -156,3 +156,44 @@ const header = document.getElementById('siteHeader');
 
     renderNewsList();
   }
+
+  const eventListPage = document.getElementById('eventListPage');
+  if (eventListPage) {
+    const todayStr = new Date().toISOString().slice(0, 10);
+    const allEventCards = Array.from(eventListPage.querySelectorAll('.event-card'));
+
+    allEventCards.forEach((card) => {
+      const isPast = card.dataset.date < todayStr;
+      card.dataset.status = isPast ? 'past' : 'upcoming';
+      const badge = card.querySelector('.event-badge');
+      if (badge) {
+        badge.textContent = isPast ? '開催終了' : '開催予定';
+        badge.classList.toggle('event-badge-past', isPast);
+      }
+    });
+
+    const eventFilterPills = document.querySelectorAll('.event-filter .tag-pill');
+    const eventNoResultsEl = document.getElementById('eventNoResults');
+    let activeEventStatus = 'all';
+
+    const renderEventList = () => {
+      let visibleCount = 0;
+      allEventCards.forEach((card) => {
+        const match = activeEventStatus === 'all' || card.dataset.status === activeEventStatus;
+        card.hidden = !match;
+        if (match) visibleCount += 1;
+      });
+      if (eventNoResultsEl) eventNoResultsEl.hidden = visibleCount !== 0;
+    };
+
+    eventFilterPills.forEach((pill) => {
+      pill.addEventListener('click', () => {
+        activeEventStatus = pill.dataset.status;
+        eventFilterPills.forEach((p) => p.classList.remove('active'));
+        pill.classList.add('active');
+        renderEventList();
+      });
+    });
+
+    renderEventList();
+  }
