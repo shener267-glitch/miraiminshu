@@ -165,12 +165,10 @@ const header = document.getElementById('siteHeader');
     allEventCards.forEach((card) => {
       const isPast = card.dataset.date < todayStr;
       card.dataset.status = isPast ? 'past' : 'upcoming';
-      if (isPast) {
-        const badge = card.querySelector('.event-badge');
-        if (badge) {
-          badge.textContent = '開催終了';
-          badge.classList.add('event-badge-past');
-        }
+      const badge = card.querySelector('.event-badge');
+      if (badge) {
+        badge.textContent = isPast ? '開催終了' : '開催予定';
+        badge.classList.toggle('event-badge-past', isPast);
       }
     });
 
