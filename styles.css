@@ -363,13 +363,18 @@
 }
 
 /* ---------- EVENTS ---------- */
+.event-search-box{max-width:480px;margin:0 auto 24px;}
+.event-search-box input{width:100%;padding:14px 20px;border:1px solid var(--line);border-radius:999px;font-size:14px;font-family:inherit;background:var(--paper);color:var(--ink);}
+.event-search-box input:focus-visible{outline:2px solid var(--ink);outline-offset:2px;}
+.event-view-toggle{display:flex;gap:10px;justify-content:center;margin-bottom:24px;}
 .event-filter{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:32px;}
 .event-list{display:flex;flex-direction:column;gap:1px;background:var(--line);border:1px solid var(--line);}
-.event-card{background:var(--paper);display:grid;grid-template-columns:100px 1fr;gap:28px;padding:28px 32px;}
+.event-card{background:var(--paper);display:grid;grid-template-columns:100px 1fr;gap:28px;padding:28px 32px;transition:background .3s var(--ease);}
 .event-card[hidden]{display:none;}
-.event-card-date{text-align:center;}
-.event-day{display:block;font-size:32px;font-weight:900;color:var(--ink);line-height:1;}
-.event-month{display:block;font-size:12px;color:var(--ink-soft);margin-top:6px;letter-spacing:.04em;}
+.event-card.event-card-highlight{background:var(--paper-deep);}
+.event-date-block{text-align:center;}
+.event-date-md{display:block;font-size:24px;font-weight:900;color:var(--ink);line-height:1.2;}
+.event-date-y{display:block;font-size:11px;color:var(--ink-soft);margin-top:6px;letter-spacing:.03em;}
 .event-card-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px;}
 .event-badge{font-size:11px;font-weight:700;border-radius:999px;padding:5px 12px;background:var(--lime);color:var(--ink);}
 .event-badge.event-badge-past{background:var(--paper-deep);color:var(--ink-soft);}
@@ -379,9 +384,25 @@
 .event-location{font-size:13px;color:var(--ink-soft);margin:0 0 10px;}
 .event-desc{font-size:14px;color:var(--ink);line-height:1.9;margin:0;}
 .event-no-results{text-align:center;color:var(--ink-soft);font-size:14px;padding:40px 0;}
+
+.event-calendar{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:24px;}
+.event-calendar-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+.event-calendar-head h3{font-size:16px;font-weight:700;color:var(--ink);margin:0;}
+.event-calendar-head button{background:transparent;border:1px solid var(--line);border-radius:8px;width:34px;height:34px;color:var(--ink);font-size:15px;}
+.event-calendar-head button:hover{background:var(--paper-deep);}
+.event-calendar-weekdays{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-bottom:none;}
+.event-calendar-weekdays span{background:var(--paper-deep);text-align:center;font-size:11.5px;font-weight:700;color:var(--ink-soft);padding:8px 0;}
+.event-calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;background:var(--line);border:1px solid var(--line);}
+.cal-day{background:var(--paper);min-height:64px;padding:8px;font-size:12.5px;color:var(--ink);}
+.cal-day.cal-day-empty{background:var(--paper-deep);}
+.cal-day.has-event{cursor:pointer;background:#fbffef;}
+.cal-day.has-event:hover{background:var(--paper-deep);}
+.cal-day-num{display:block;}
+.cal-day .dot{width:6px;height:6px;border-radius:50%;background:var(--lime);display:block;margin-top:6px;}
 @media (max-width:680px){
   .event-card{grid-template-columns:1fr;gap:12px;}
-  .event-card-date{text-align:left;display:flex;align-items:baseline;gap:8px;}
+  .event-date-block{text-align:left;display:flex;align-items:baseline;gap:8px;}
+  .cal-day{min-height:44px;font-size:11px;padding:6px 4px;}
 }
 
 /* ---------- FORMS (join / contact) ---------- */

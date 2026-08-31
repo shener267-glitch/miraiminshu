@@ -284,17 +284,23 @@ async function regenerateIndexNewsPreview(newsArr) {
 
 // ---------- templates: events ----------
 
-function formatEventDay(iso) {
-  const [, m, d] = iso.split('-');
-  return { day: d, month: `${iso.slice(0, 4)}.${m}` };
+const EVENT_WEEKDAY_JP = ['日', '月', '火', '水', '木', '金', '土'];
+
+function formatEventDate(iso) {
+  const [y, m, d] = iso.split('-').map(Number);
+  const wd = EVENT_WEEKDAY_JP[new Date(y, m - 1, d).getDay()];
+  return {
+    md: `${String(m).padStart(2, '0')}/${String(d).padStart(2, '0')}`,
+    y: `${y}（${wd}）`,
+  };
 }
 
 function eventCardHtml(item) {
-  const { day, month } = formatEventDay(item.date);
+  const { md, y } = formatEventDate(item.date);
   return `        <div class="event-card" data-date="${item.date}">
-          <div class="event-card-date">
-            <span class="event-day">${day}</span>
-            <span class="event-month">${month}</span>
+          <div class="event-date-block">
+            <span class="event-date-md">${md}</span>
+            <span class="event-date-y">${y}</span>
           </div>
           <div>
             <div class="event-card-head">
@@ -939,8 +945,8 @@ function openEventForm(item) {
       </select>
       <label>タイトル</label>
       <input type="text" id="f_title" value="${item ? escapeHtml(item.title) : ''}">
-      <label>開催場所</label>
-      <input type="text" id="f_location" placeholder="例: 大阪府大阪市" value="${item ? escapeHtml(item.location) : ''}">
+      <label>開催場所（施設名（都道府県市）の形式がおすすめ）</label>
+      <input type="text" id="f_location" placeholder="例: 大阪みなとフォーラム（大阪府大阪市）" value="${item ? escapeHtml(item.location) : ''}">
       <label>説明</label>
       <textarea id="f_description">${item ? escapeHtml(item.description) : ''}</textarea>
       <div class="form-actions">

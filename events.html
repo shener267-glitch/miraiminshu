@@ -50,18 +50,39 @@
 
   <section class="page-section">
     <div class="wrap">
+      <div class="event-search-box">
+        <input type="search" id="eventSearchInput" placeholder="イベント名・場所で検索（例：大阪、街頭演説）" aria-label="イベント検索">
+      </div>
+
+      <div class="event-view-toggle">
+        <button type="button" class="tag-pill active" data-view="list">リスト表示</button>
+        <button type="button" class="tag-pill" data-view="calendar">カレンダー表示</button>
+      </div>
+
       <div class="event-filter">
         <button type="button" class="tag-pill active" data-status="all">すべて</button>
         <button type="button" class="tag-pill" data-status="upcoming">開催予定</button>
         <button type="button" class="tag-pill" data-status="past">開催終了</button>
       </div>
 
+      <div class="event-calendar" id="eventCalendar" hidden>
+        <div class="event-calendar-head">
+          <button type="button" id="calPrevMonth" aria-label="前の月">←</button>
+          <h3 id="calMonthLabel"></h3>
+          <button type="button" id="calNextMonth" aria-label="次の月">→</button>
+        </div>
+        <div class="event-calendar-weekdays">
+          <span>日</span><span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span>土</span>
+        </div>
+        <div class="event-calendar-grid" id="calGrid"></div>
+      </div>
+
       <div class="event-list" id="eventListPage">
         <!-- EVENT-ROWS-START -->
         <div class="event-card" data-date="2026-08-05">
-          <div class="event-card-date">
-            <span class="event-day">05</span>
-            <span class="event-month">2026.08</span>
+          <div class="event-date-block">
+            <span class="event-date-md">08/05</span>
+            <span class="event-date-y">2026（水）</span>
           </div>
           <div>
             <div class="event-card-head">
@@ -70,15 +91,15 @@
               <span class="event-time">14:00〜16:00</span>
             </div>
             <h3>「未来対話」札幌会場</h3>
-            <p class="event-location">北海道札幌市</p>
+            <p class="event-location">さっぽろ未来ホール（北海道札幌市）</p>
             <p class="event-desc">全国キャラバン「未来対話」の初回会場です。東雲代表をはじめ所属議員が参加者からの質問に直接お答えしました。</p>
           </div>
         </div>
 
         <div class="event-card" data-date="2026-08-20">
-          <div class="event-card-date">
-            <span class="event-day">20</span>
-            <span class="event-month">2026.08</span>
+          <div class="event-date-block">
+            <span class="event-date-md">08/20</span>
+            <span class="event-date-y">2026（木）</span>
           </div>
           <div>
             <div class="event-card-head">
@@ -87,15 +108,15 @@
               <span class="event-time">13:30〜15:30</span>
             </div>
             <h3>「未来対話」仙台会場</h3>
-            <p class="event-location">宮城県仙台市</p>
+            <p class="event-location">仙台けやきプラザ（宮城県仙台市）</p>
             <p class="event-desc">子育て支援や地域経済についての質問が多く寄せられました。いただいたご意見は次期公約に反映していきます。</p>
           </div>
         </div>
 
         <div class="event-card" data-date="2026-09-10">
-          <div class="event-card-date">
-            <span class="event-day">10</span>
-            <span class="event-month">2026.09</span>
+          <div class="event-date-block">
+            <span class="event-date-md">09/10</span>
+            <span class="event-date-y">2026（木）</span>
           </div>
           <div>
             <div class="event-card-head">
@@ -104,15 +125,15 @@
               <span class="event-time">14:00〜16:00</span>
             </div>
             <h3>「未来対話」大阪会場</h3>
-            <p class="event-location">大阪府大阪市</p>
+            <p class="event-location">大阪みなとフォーラム（大阪府大阪市）</p>
             <p class="event-desc">対話集会「未来対話」の大阪会場を開催します。地域経済や教育政策について直接ご意見をお聞かせください。</p>
           </div>
         </div>
 
         <div class="event-card" data-date="2026-09-25">
-          <div class="event-card-date">
-            <span class="event-day">25</span>
-            <span class="event-month">2026.09</span>
+          <div class="event-date-block">
+            <span class="event-date-md">09/25</span>
+            <span class="event-date-y">2026（金）</span>
           </div>
           <div>
             <div class="event-card-head">
@@ -121,15 +142,15 @@
               <span class="event-time">10:00〜17:00</span>
             </div>
             <h3>秋季定例党大会</h3>
-            <p class="event-location">東京都 党本部ホール</p>
+            <p class="event-location">未来民主党本部 大ホール（東京都）</p>
             <p class="event-desc">次期衆議院選挙に向けた公約の詳細を発表する定例党大会を開催します。党員・サポーターの皆さまはどなたでもご参加いただけます。</p>
           </div>
         </div>
 
         <div class="event-card" data-date="2026-10-05">
-          <div class="event-card-date">
-            <span class="event-day">05</span>
-            <span class="event-month">2026.10</span>
+          <div class="event-date-block">
+            <span class="event-date-md">10/05</span>
+            <span class="event-date-y">2026（月）</span>
           </div>
           <div>
             <div class="event-card-head">
@@ -138,15 +159,15 @@
               <span class="event-time">14:00〜16:00</span>
             </div>
             <h3>「未来対話」名古屋会場</h3>
-            <p class="event-location">愛知県名古屋市</p>
+            <p class="event-location">名古屋レイクサイドホール（愛知県名古屋市）</p>
             <p class="event-desc">全国キャラバン「未来対話」の名古屋会場です。ものづくり産業の未来をテーマに意見交換を行います。</p>
           </div>
         </div>
 
         <div class="event-card" data-date="2026-10-18">
-          <div class="event-card-date">
-            <span class="event-day">18</span>
-            <span class="event-month">2026.10</span>
+          <div class="event-date-block">
+            <span class="event-date-md">10/18</span>
+            <span class="event-date-y">2026（日）</span>
           </div>
           <div>
             <div class="event-card-head">
@@ -155,7 +176,7 @@
               <span class="event-time">11:00〜12:00</span>
             </div>
             <h3>街頭演説会（福岡）</h3>
-            <p class="event-location">福岡県福岡市 天神</p>
+            <p class="event-location">天神未来公園前（福岡県福岡市）</p>
             <p class="event-desc">党代表による街頭演説会を実施します。直接ご質問いただける時間も設けます。</p>
           </div>
         </div>

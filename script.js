@@ -174,12 +174,24 @@ const header = document.getElementById('siteHeader');
 
     const eventFilterPills = document.querySelectorAll('.event-filter .tag-pill');
     const eventNoResultsEl = document.getElementById('eventNoResults');
+    const eventSearchInput = document.getElementById('eventSearchInput');
     let activeEventStatus = 'all';
+    let eventSearchQuery = '';
+
+    const eventCardMatches = (card) => {
+      if (activeEventStatus !== 'all' && card.dataset.status !== activeEventStatus) return false;
+      if (!eventSearchQuery) return true;
+      const title = card.querySelector('h3');
+      const location = card.querySelector('.event-location');
+      const type = card.querySelector('.event-type');
+      const text = `${title ? title.textContent : ''} ${location ? location.textContent : ''} ${type ? type.textContent : ''}`.toLowerCase();
+      return text.includes(eventSearchQuery);
+    };
 
     const renderEventList = () => {
       let visibleCount = 0;
       allEventCards.forEach((card) => {
-        const match = activeEventStatus === 'all' || card.dataset.status === activeEventStatus;
+        const match = eventCardMatches(card);
         card.hidden = !match;
         if (match) visibleCount += 1;
       });
@@ -195,5 +207,112 @@ const header = document.getElementById('siteHeader');
       });
     });
 
+    if (eventSearchInput) {
+      eventSearchInput.addEventListener('input', () => {
+        eventSearchQuery = eventSearchInput.value.trim().toLowerCase();
+        renderEventList();
+      });
+    }
+
     renderEventList();
+
+    // ---- view toggle (list / calendar) ----
+    const viewTogglePills = document.querySelectorAll('.event-view-toggle .tag-pill');
+    const eventListEl = document.getElementById('eventListPage');
+    const eventCalendarEl = document.getElementById('eventCalendar');
+
+    const switchEventView = (view) => {
+      viewTogglePills.forEach((p) => p.classList.toggle('active', p.dataset.view === view));
+      if (eventListEl) eventListEl.hidden = view !== 'list';
+      if (eventCalendarEl) eventCalendarEl.hidden = view !== 'calendar';
+      if (eventNoResultsEl) eventNoResultsEl.hidden = view !== 'list' || eventNoResultsEl.hidden;
+    };
+
+    viewTogglePills.forEach((pill) => {
+      pill.addEventListener('click', () => switchEventView(pill.dataset.view));
+    });
+
+    // ---- calendar view ----
+    const calGrid = document.getElementById('calGrid');
+    const calMonthLabel = document.getElementById('calMonthLabel');
+    const calPrevBtn = document.getElementById('calPrevMonth');
+    const calNextBtn = document.getElementById('calNextMonth');
+
+    if (calGrid && calMonthLabel) {
+      const eventsByDate = new Map();
+      allEventCards.forEach((card) => {
+        const list = eventsByDate.get(card.dataset.date) || [];
+        list.push(card);
+        eventsByDate.set(card.dataset.date, list);
+      });
+
+      const today = new Date();
+      let calYear = today.getFullYear();
+      let calMonth = today.getMonth();
+
+      const goToEvent = (dateStr) => {
+        const cards = eventsByDate.get(dateStr);
+        if (!cards || !cards.length) return;
+        switchEventView('list');
+        activeEventStatus = 'all';
+        eventSearchQuery = '';
+        if (eventSearchInput) eventSearchInput.value = '';
+        eventFilterPills.forEach((p) => p.classList.toggle('active', p.dataset.status === 'all'));
+        renderEventList();
+        const target = cards[0];
+        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        target.classList.add('event-card-highlight');
+        setTimeout(() => target.classList.remove('event-card-highlight'), 1600);
+      };
+
+      const renderCalendar = () => {
+        calMonthLabel.textContent = `${calYear}年${calMonth + 1}月`;
+        calGrid.innerHTML = '';
+
+        const firstDay = new Date(calYear, calMonth, 1).getDay();
+        const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+
+        for (let i = 0; i < firstDay; i += 1) {
+          const empty = document.createElement('div');
+          empty.className = 'cal-day cal-day-empty';
+          calGrid.appendChild(empty);
+        }
+
+        for (let day = 1; day <= daysInMonth; day += 1) {
+          const dateStr = `${calYear}-${String(calMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+          const cell = document.createElement('div');
+          cell.className = 'cal-day';
+          const hasEvent = eventsByDate.has(dateStr);
+          const numEl = document.createElement('span');
+          numEl.className = 'cal-day-num';
+          numEl.textContent = String(day);
+          cell.appendChild(numEl);
+          if (hasEvent) {
+            cell.classList.add('has-event');
+            const dot = document.createElement('span');
+            dot.className = 'dot';
+            cell.appendChild(dot);
+            cell.addEventListener('click', () => goToEvent(dateStr));
+          }
+          calGrid.appendChild(cell);
+        }
+      };
+
+      if (calPrevBtn) {
+        calPrevBtn.addEventListener('click', () => {
+          calMonth -= 1;
+          if (calMonth < 0) { calMonth = 11; calYear -= 1; }
+          renderCalendar();
+        });
+      }
+      if (calNextBtn) {
+        calNextBtn.addEventListener('click', () => {
+          calMonth += 1;
+          if (calMonth > 11) { calMonth = 0; calYear += 1; }
+          renderCalendar();
+        });
+      }
+
+      renderCalendar();
+    }
   }
