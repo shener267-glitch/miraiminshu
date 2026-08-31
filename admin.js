@@ -284,28 +284,27 @@ async function regenerateIndexNewsPreview(newsArr) {
 
 // ---------- templates: events ----------
 
-function formatEventDay(iso) {
-  const [, m, d] = iso.split('-');
-  return { day: d, month: `${iso.slice(0, 4)}.${m}` };
+const EVENT_WEEKDAY_JP = ['日', '月', '火', '水', '木', '金', '土'];
+
+function formatEventDate(iso) {
+  const [y, m, d] = iso.split('-').map(Number);
+  const wd = EVENT_WEEKDAY_JP[new Date(y, m - 1, d).getDay()];
+  return `${y}.${String(m).padStart(2, '0')}.${String(d).padStart(2, '0')}（${wd}）`;
 }
 
 function eventCardHtml(item) {
-  const { day, month } = formatEventDay(item.date);
   return `        <div class="event-card" data-date="${item.date}">
-          <div class="event-card-date">
-            <span class="event-day">${day}</span>
-            <span class="event-month">${month}</span>
+          <div class="event-meta-row">
+            <span class="event-date">${formatEventDate(item.date)}</span>
+            <span class="event-badge">開催予定</span>
           </div>
-          <div>
-            <div class="event-card-head">
-              <span class="event-badge"></span>
-              <span class="event-type">${escapeHtml(item.typeLabel)}</span>
-              <span class="event-time">${escapeHtml(item.time)}</span>
-            </div>
-            <h3>${escapeHtml(item.title)}</h3>
-            <p class="event-location">${escapeHtml(item.location)}</p>
-            <p class="event-desc">${escapeHtml(item.description)}</p>
+          <h3>${escapeHtml(item.title)}</h3>
+          <div class="event-detail-row">
+            <span class="event-type">${escapeHtml(item.typeLabel)}</span>
+            <span class="event-time">${escapeHtml(item.time)}</span>
+            <span class="event-location">${escapeHtml(item.location)}</span>
           </div>
+          <p class="event-desc">${escapeHtml(item.description)}</p>
         </div>`;
 }
 
