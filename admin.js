@@ -419,6 +419,13 @@ async function saveNews(formData, isNew, imageFile) {
     }
 
     let imagePath = formData.existingImage || '';
+
+    if ((formData.removeImage || imageFile) && imagePath) {
+      const oldImg = await getFile(imagePath);
+      if (oldImg) await deleteFile(imagePath, `画像削除: ${slug}`, oldImg.sha);
+      imagePath = '';
+    }
+
     if (imageFile) {
       const b64 = await fileToBase64(imageFile);
       const ext = (imageFile.name.split('.').pop() || 'jpg').toLowerCase();
@@ -498,6 +505,13 @@ async function saveMember(formData, isNew, imageFile) {
     if (isNew && arr.some(x => x.slug === slug)) throw new Error('このスラッグは既に使われています: ' + slug);
 
     let imagePath = formData.existingImage || 'images/officer-placeholder.png';
+
+    if ((formData.removeImage || imageFile) && imagePath.startsWith('images/members/')) {
+      const oldImg = await getFile(imagePath);
+      if (oldImg) await deleteFile(imagePath, `画像削除: ${slug}`, oldImg.sha);
+      imagePath = 'images/officer-placeholder.png';
+    }
+
     if (imageFile) {
       const b64 = await fileToBase64(imageFile);
       const ext = (imageFile.name.split('.').pop() || 'jpg').toLowerCase();
@@ -659,6 +673,10 @@ function openNewsForm(item) {
       <label>本文（改行で段落を分けます）</label>
       <textarea id="f_body">${item ? escapeHtml(item.body.join('\n\n')) : ''}</textarea>
       <label>画像（任意）</label>
+      ${item && item.image ? `<div class="current-image">
+        <img src="${item.image}" alt="">
+        <label class="checkbox-label"><input type="checkbox" id="f_remove_image"> この画像を削除する</label>
+      </div>` : ''}
       <input type="file" id="f_image" accept="image/*">
       <div class="form-actions">
         <button class="btn-primary" id="f_save">保存する</button>
@@ -668,6 +686,7 @@ function openNewsForm(item) {
   document.getElementById('f_category').value = item ? item.category : 'policy';
   document.getElementById('f_cancel').addEventListener('click', closeForm);
   document.getElementById('f_save').addEventListener('click', () => {
+    const removeImageEl = document.getElementById('f_remove_image');
     const formData = {
       slug: item ? item.slug : null,
       date: document.getElementById('f_date').value,
@@ -675,6 +694,7 @@ function openNewsForm(item) {
       title: document.getElementById('f_title').value.trim(),
       body: document.getElementById('f_body').value,
       existingImage: item ? item.image : '',
+      removeImage: removeImageEl ? removeImageEl.checked : false,
     };
     if (!formData.date || !formData.title || !formData.body.trim()) {
       setStatus('日付・題名・本文は必須です。', 'error');
@@ -721,6 +741,10 @@ function openMemberForm(item) {
         <input type="url" id="f_sns_yt" placeholder="YouTube" value="${item && item.sns ? item.sns.youtube || '' : ''}">
       </div>
       <label>画像（任意）</label>
+      ${item && item.image && item.image.startsWith('images/members/') ? `<div class="current-image">
+        <img src="${item.image}" alt="">
+        <label class="checkbox-label"><input type="checkbox" id="f_remove_image"> この画像を削除する（既定の画像に戻します）</label>
+      </div>` : ''}
       <input type="file" id="f_image" accept="image/*">
       <div class="form-actions">
         <button class="btn-primary" id="f_save">保存する</button>
@@ -730,6 +754,7 @@ function openMemberForm(item) {
   document.getElementById('f_chamber').value = item && item.chamber ? item.chamber : 'lower';
   document.getElementById('f_cancel').addEventListener('click', closeForm);
   document.getElementById('f_save').addEventListener('click', () => {
+    const removeImageEl = document.getElementById('f_remove_image');
     const formData = {
       slug: document.getElementById('f_slug').value,
       name: document.getElementById('f_name').value.trim(),
@@ -744,6 +769,7 @@ function openMemberForm(item) {
       snsInstagram: document.getElementById('f_sns_ig').value.trim(),
       snsYoutube: document.getElementById('f_sns_yt').value.trim(),
       existingImage: item ? item.image : '',
+      removeImage: removeImageEl ? removeImageEl.checked : false,
     };
     if (!formData.slug || !formData.name || !formData.district || !formData.birthdate) {
       setStatus('スラッグ・名前・選挙区・生年月日は必須です。', 'error');
