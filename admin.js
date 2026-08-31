@@ -554,6 +554,30 @@ async function saveMember(formData, isNew, imageFile) {
   }
 }
 
+async function moveOfficer(slug, direction) {
+  setStatus('並び替え中…');
+  try {
+    const memberFile = await getFile('data/members.json');
+    const arr = memberFile ? JSON.parse(memberFile.text) : [];
+    const officerIndices = arr.reduce((acc, m, i) => { if (m.roles && m.roles.length) acc.push(i); return acc; }, []);
+    const pos = officerIndices.findIndex(i => arr[i].slug === slug);
+    const targetPos = pos + direction;
+    if (pos === -1 || targetPos < 0 || targetPos >= officerIndices.length) return;
+    const i = officerIndices[pos];
+    const j = officerIndices[targetPos];
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+
+    await putTextFile('data/members.json', JSON.stringify(arr, null, 2) + '\n', `役員の表示順を変更: ${slug}`, memberFile.sha);
+    await regenerateMembersGrid(arr);
+
+    setStatus('並び替えました。サイトへの反映まで少し時間がかかることがあります。', 'success');
+    await loadAndRenderMembers();
+  } catch (err) {
+    console.error(err);
+    setStatus('エラー: ' + err.message, 'error');
+  }
+}
+
 async function deleteMember(slug) {
   if (!confirm('この議員情報を削除しますか？')) return;
   setStatus('削除中…');
@@ -614,33 +638,90 @@ async function loadAndRenderNews() {
   }
 }
 
+let lastMembersArr = [];
+let memberSearchQuery = '';
+
+function memberMatchesQuery(item, q) {
+  if (!q) return true;
+  const text = [item.name, item.nameKana, rolesLabel(item.roles), item.district].filter(Boolean).join(' ').toLowerCase();
+  return text.includes(q);
+}
+
+function buildMemberRow(item, reorder) {
+  const row = document.createElement('div');
+  row.className = 'item-row';
+  const reorderHtml = reorder
+    ? `<div class="reorder">
+        <button class="btn-reorder" data-action="up"${reorder.disableUp ? ' disabled' : ''} title="上へ移動" aria-label="上へ移動">▲</button>
+        <button class="btn-reorder" data-action="down"${reorder.disableDown ? ' disabled' : ''} title="下へ移動" aria-label="下へ移動">▼</button>
+      </div>`
+    : '';
+  row.innerHTML = `
+    <div class="item-row-main">
+      ${reorderHtml}
+      <img src="${item.image}" alt="">
+      <div class="item-row-text">
+        <div class="title">${escapeHtml(item.name)}</div>
+        <div class="meta">${[rolesLabel(item.roles), CHAMBER_LABELS[item.chamber], item.district].filter(Boolean).map(escapeHtml).join(' ・ ')}</div>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="btn-outline btn-small" data-action="edit">編集</button>
+      <button class="btn-danger" data-action="delete">削除</button>
+    </div>`;
+  row.querySelector('[data-action="edit"]').addEventListener('click', () => openMemberForm(item));
+  row.querySelector('[data-action="delete"]').addEventListener('click', () => deleteMember(item.slug));
+  if (reorder) {
+    row.querySelector('[data-action="up"]').addEventListener('click', () => moveOfficer(item.slug, -1));
+    row.querySelector('[data-action="down"]').addEventListener('click', () => moveOfficer(item.slug, 1));
+  }
+  return row;
+}
+
+function renderMemberList() {
+  const listEl = document.getElementById('memberList');
+  listEl.innerHTML = '';
+  const arr = lastMembersArr;
+  if (arr.length === 0) { listEl.textContent = '議員情報はまだありません。'; return; }
+
+  const q = memberSearchQuery.trim().toLowerCase();
+  const officers = arr.filter(m => m.roles && m.roles.length);
+  const generalMembers = arr.filter(m => !(m.roles && m.roles.length));
+  const officersFiltered = officers.filter(m => memberMatchesQuery(m, q));
+  const generalFiltered = generalMembers.filter(m => memberMatchesQuery(m, q));
+
+  if (officersFiltered.length === 0 && generalFiltered.length === 0) {
+    listEl.textContent = '該当する議員が見つかりませんでした。';
+    return;
+  }
+
+  if (officersFiltered.length) {
+    const heading = document.createElement('div');
+    heading.className = 'member-group-heading';
+    heading.textContent = '執行部（役員）／ ▲▼で表示順を変更できます';
+    listEl.appendChild(heading);
+    officersFiltered.forEach(item => {
+      const pos = officers.findIndex(m => m.slug === item.slug);
+      listEl.appendChild(buildMemberRow(item, { disableUp: pos === 0, disableDown: pos === officers.length - 1 }));
+    });
+  }
+
+  if (generalFiltered.length) {
+    const heading = document.createElement('div');
+    heading.className = 'member-group-heading';
+    heading.textContent = '一般議員';
+    listEl.appendChild(heading);
+    generalFiltered.forEach(item => listEl.appendChild(buildMemberRow(item, null)));
+  }
+}
+
 async function loadAndRenderMembers() {
   const listEl = document.getElementById('memberList');
   listEl.textContent = '読み込み中…';
   try {
     const file = await getFile('data/members.json');
-    const arr = file ? JSON.parse(file.text) : [];
-    listEl.innerHTML = '';
-    if (arr.length === 0) { listEl.textContent = '議員情報はまだありません。'; return; }
-    arr.forEach(item => {
-      const row = document.createElement('div');
-      row.className = 'item-row';
-      row.innerHTML = `
-        <div class="item-row-main">
-          <img src="${item.image}" alt="">
-          <div class="item-row-text">
-            <div class="title">${escapeHtml(item.name)}</div>
-            <div class="meta">${[rolesLabel(item.roles), CHAMBER_LABELS[item.chamber], item.district].filter(Boolean).map(escapeHtml).join(' ・ ')}</div>
-          </div>
-        </div>
-        <div class="actions">
-          <button class="btn-outline btn-small" data-action="edit">編集</button>
-          <button class="btn-danger" data-action="delete">削除</button>
-        </div>`;
-      row.querySelector('[data-action="edit"]').addEventListener('click', () => openMemberForm(item));
-      row.querySelector('[data-action="delete"]').addEventListener('click', () => deleteMember(item.slug));
-      listEl.appendChild(row);
-    });
+    lastMembersArr = file ? JSON.parse(file.text) : [];
+    renderMemberList();
   } catch (err) {
     listEl.textContent = 'エラー: ' + err.message;
   }
@@ -815,5 +896,9 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
 
 document.getElementById('newsAddBtn').addEventListener('click', () => openNewsForm(null));
 document.getElementById('memberAddBtn').addEventListener('click', () => openMemberForm(null));
+document.getElementById('memberAdminSearch').addEventListener('input', (e) => {
+  memberSearchQuery = e.target.value;
+  renderMemberList();
+});
 
 if (getToken()) showApp();
