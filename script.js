@@ -216,23 +216,7 @@ const header = document.getElementById('siteHeader');
 
     renderEventList();
 
-    // ---- view toggle (list / calendar) ----
-    const viewTogglePills = document.querySelectorAll('.event-view-toggle .tag-pill');
-    const eventListEl = document.getElementById('eventListPage');
-    const eventCalendarEl = document.getElementById('eventCalendar');
-
-    const switchEventView = (view) => {
-      viewTogglePills.forEach((p) => p.classList.toggle('active', p.dataset.view === view));
-      if (eventListEl) eventListEl.hidden = view !== 'list';
-      if (eventCalendarEl) eventCalendarEl.hidden = view !== 'calendar';
-      if (eventNoResultsEl) eventNoResultsEl.hidden = view !== 'list' || eventNoResultsEl.hidden;
-    };
-
-    viewTogglePills.forEach((pill) => {
-      pill.addEventListener('click', () => switchEventView(pill.dataset.view));
-    });
-
-    // ---- calendar view ----
+    // ---- calendar (always visible alongside the list) ----
     const calGrid = document.getElementById('calGrid');
     const calMonthLabel = document.getElementById('calMonthLabel');
     const calPrevBtn = document.getElementById('calPrevMonth');
@@ -253,7 +237,6 @@ const header = document.getElementById('siteHeader');
       const goToEvent = (dateStr) => {
         const cards = eventsByDate.get(dateStr);
         if (!cards || !cards.length) return;
-        switchEventView('list');
         activeEventStatus = 'all';
         eventSearchQuery = '';
         if (eventSearchInput) eventSearchInput.value = '';
